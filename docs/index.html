@@ -193,29 +193,29 @@
 
     /* ── Code window ─────────────────────────────── */
     .window-wrap {
-      max-width: 760px;
+      max-width: 1000px; 
       margin: 0 auto;
       padding: 0 24px 80px;
     }
     .window {
-      background: var(--white);
-      border: 1px solid var(--border);
+      background: #1e293b; /* Dark Slate 800 */
+      border: 1px solid #334155;
       border-radius: 14px;
       overflow: hidden;
-      box-shadow: var(--shadow-lg);
+      box-shadow: 0 20px 40px rgba(0,0,0,.3);
     }
     .window-bar {
-      background: var(--bg);
-      border-bottom: 1px solid var(--border);
+      background: #0f172a; /* Dark Slate 900 */
+      border-bottom: 1px solid #334155;
       padding: 12px 16px;
       display: flex;
       align-items: center;
       gap: 10px;
     }
-    .win-dot { width: 11px; height: 11px; border-radius: 50%; }
-    .win-red    { background: #ff5f57; }
-    .win-yellow { background: #febc2e; }
-    .win-green  { background: #28c840; }
+    .win-dot { width: 10px; height: 10px; border-radius: 50%; opacity: 0.8; }
+    .win-red    { background: #ef4444; border: 1px solid #991b1b; }
+    .win-yellow { background: #f59e0b; border: 1px solid #92400e; }
+    .win-green  { background: #10b981; border: 1px solid #065f46; }
     .win-label {
       margin-left: 6px;
       font-size: .78rem;
@@ -235,18 +235,19 @@
     .win-body {
       padding: 24px 28px;
       font-family: 'JetBrains Mono', monospace;
-      font-size: .82rem;
-      line-height: 2;
+      font-size: .74rem; 
+      line-height: 1.5;
+      color: #e2e8f0;
     }
-    .ln { display: block; }
-    .cmt  { color: var(--subtle); }
+    .ln { display: block; white-space: pre; }
+    .cmt  { color: #64748b; }
     .cmt::before { content: '# '; }
-    .cmd  { color: var(--accent); }
-    .cmd::before { content: '$ '; color: var(--subtle); }
-    .ok   { color: var(--green);  padding-left: 16px; }
-    .warn { color: var(--yellow); padding-left: 16px; }
-    .fail { color: var(--red);    padding-left: 16px; }
-    .dim  { color: var(--subtle); padding-left: 16px; }
+    .cmd  { color: #38bdf8; } /* Cyan 400 */
+    .cmd::before { content: '❯ '; color: #64748b; }
+    .ok   { color: #4ade80; } /* Green 400 */
+    .warn { color: #fbbf24; } /* Amber 400 */
+    .fail { color: #f87171; } /* Red 400 */
+    .dim  { color: #94a3b8; }
     .gap  { display: block; height: 10px; }
     .cursor {
       display: inline-block;
@@ -261,7 +262,7 @@
 
     /* ── Stats row ───────────────────────────────── */
     .stats {
-      max-width: 760px;
+      max-width: 1000px;
       margin: 0 auto;
       padding: 0 24px 80px;
       display: flex;
@@ -278,13 +279,13 @@
       box-shadow: var(--shadow);
     }
     .stat-num {
-      font-size: 1.8rem;
+      font-size: 1.25rem; /* More unified, smaller size */
       font-weight: 700;
-      letter-spacing: -.03em;
-      line-height: 1;
-      margin-bottom: 4px;
+      letter-spacing: -.02em;
+      line-height: 1.2;
+      margin-bottom: 6px;
     }
-    .stat-label { font-size: .8rem; color: var(--muted); }
+    .stat-label { font-size: .78rem; color: var(--muted); font-weight: 500; }
     .c-blue   { color: var(--accent); }
     .c-green  { color: var(--green); }
     .c-purple { color: #7c3aed; }
@@ -583,21 +584,38 @@
         <span class="win-tab">bash</span>
       </div>
       <div class="win-body">
-        <span class="ln cmt">Run a full audit</span>
-        <span class="ln cmd">ens-auditor audit</span>
-        <span class="ln ok">✔  ens.s3.encryption     PASSED    S3 default encryption enforced</span>
-        <span class="ln ok">✔  ens.s3.public-block   PASSED    Public access block active</span>
-        <span class="ln warn">⚠  ens.rds.multi-az      WARNING   Multi-AZ not enabled on prod-db</span>
-        <span class="ln fail">✖  ens.iam.mfa           FAILED    3 IAM users without MFA</span>
-        <span class="gap"></span>
-        <span class="ln cmt">Save a JSON report</span>
-        <span class="ln cmd">ens-auditor audit --output json --output-file report.json</span>
-        <span class="gap"></span>
-        <span class="ln cmt">Filter by severity level</span>
-        <span class="ln cmd">ens-auditor audit --severity CRITICAL</span>
-        <span class="gap"></span>
-        <span class="ln cmt">List all ENS controls</span>
-        <span class="ln cmd">ens-auditor list-controls<span class="cursor"></span></span>
+        <span class="ln cmd">./ens-auditor audit --output table</span>
+        <span class="ln dim">Audit Progress: [====================] 100% (13/13) ens.rds.multi-az</span>
+        <span class="ln dim">Audit completed.</span>
+        <span class="ln"></span>
+        <span class="ln">╔════════════════════════════════════════════╗</span>
+        <span class="ln">║     ENS Auditor - Compliance Report        ║</span>
+        <span class="ln">╚════════════════════════════════════════════╝</span>
+        <span class="ln">  Date       : 2026-04-03 14:34:03</span>
+        <span class="ln">  Overall    : <span class="fail">CRITICAL</span></span>
+        <span class="ln"></span>
+        <span class="ln">+---------------------------+--------------------+------------+-------------------------------------------------------------------+</span>
+        <span class="ln">| Control ID                | Status             | Severity   | Findings                                                          |</span>
+        <span class="ln">+---------------------------+--------------------+------------+-------------------------------------------------------------------+</span>
+        <span class="ln">| ens.s3.encryption         | <span class="fail">NON_COMPLIANT</span>      | <span class="fail">CRITICAL</span>   | 3 buckets are missing default encryption: logs-prod, temp-assets  |</span>
+        <span class="ln">| ens.s3.logging            | <span class="fail">NON_COMPLIANT</span>      | HIGH       | 12 buckets lack access logging: media-storage, web-assets         |</span>
+        <span class="ln">| ens.rds.encryption        | <span class="fail">NON_COMPLIANT</span>      | <span class="fail">CRITICAL</span>   | 2 RDS instances are NOT encrypted: auth-db-dev, billing-replica   |</span>
+        <span class="ln">| ens.rds.logging           | <span class="fail">NON_COMPLIANT</span>      | HIGH       | 4 RDS instances have CloudWatch logging disabled                  |</span>
+        <span class="ln">| ens.rds.kms-key           | <span class="ok">COMPLIANT</span>          | <span class="fail">CRITICAL</span>   | All RDS instances use managed KMS keys.                           |</span>
+        <span class="ln">| ens.iam.mfa               | <span class="warn">NOT_EVALUATED</span>      | HIGH       | Manual check required for root account MFA                        |</span>
+        <span class="ln">| ens.iam.least-privilege   | <span class="fail">NON_COMPLIANT</span>      | HIGH       | 3 roles have AdministrativeAccess policies attached               |</span>
+        <span class="ln">| ens.iam.unused-credentials| <span class="ok">COMPLIANT</span>          | HIGH       | No access keys older than 90 days found.                          |</span>
+        <span class="ln">| ens.rds.iam-auth          | <span class="fail">NON_COMPLIANT</span>      | HIGH       | 8 instances lack IAM Database Authentication                      |</span>
+        <span class="ln">| ens.s3.public-access      | <span class="ok">COMPLIANT</span>          | <span class="fail">CRITICAL</span>   | Public access block enabled for all sensitive buckets.            |</span>
+        <span class="ln">| ens.s3.versioning         | <span class="fail">NON_COMPLIANT</span>      | HIGH       | Versioning disabled on 5 production buckets                       |</span>
+        <span class="ln">| ens.rds.backup            | <span class="ok">COMPLIANT</span>          | HIGH       | Automated backups enabled for all instances.                      |</span>
+        <span class="ln">| ens.rds.multi-az          | <span class="fail">NON_COMPLIANT</span>      | HIGH       | 2 instances lack Multi-AZ deployment (High Availability)          |</span>
+        <span class="ln">+---------------------------+--------------------+------------+-------------------------------------------------------------------+</span>
+        <span class="ln"></span>
+        <span class="ln">  Module compliance:</span>
+        <span class="ln">    ens: <span class="fail">CRITICAL</span></span>
+        <span class="ln"></span>
+        <span class="ln">  <span class="ok">COMPLIANT: 4</span>  |  <span class="fail">NON-COMPLIANT: 8</span>  |  <span class="warn">NOT EVALUATED: 1</span><span class="cursor"></span></span>
       </div>
     </div>
   </div>
@@ -738,7 +756,7 @@
       <div class="install-header">
         <div class="install-header-icon">🔨</div>
         <div class="install-header-title">Build from source</div>
-        <span class="install-meta">Java 21+ · Maven 3.9+</span>
+        <span class="install-meta">Java 25+ · Maven 3.9+</span>
       </div>
       <div class="install-body">
         <span class="ln cmd">git clone https://github.com/juanmorschrott/ens-auditor.git &amp;&amp; cd ens-auditor</span>
@@ -750,23 +768,6 @@
       </div>
     </div>
 
-    <div class="install-card">
-      <div class="install-header">
-        <div class="install-header-icon">🔁</div>
-        <div class="install-header-title">GitHub Actions</div>
-        <span class="install-meta">CI/CD integration</span>
-      </div>
-      <div class="install-body">
-        <span class="ln"><span class="code-key">- name:</span> <span class="code-str">Run ENS Audit</span></span>
-        <span class="ln">  <span class="code-key">run:</span> <span class="code-val">./ens-auditor audit --output json --output-file ens-report.json</span></span>
-        <span class="gap"></span>
-        <span class="ln"><span class="code-key">- name:</span> <span class="code-str">Upload report</span></span>
-        <span class="ln">  <span class="code-key">if:</span> <span class="code-val">always()</span></span>
-        <span class="ln">  <span class="code-key">uses:</span> <span class="code-str">actions/upload-artifact@v4</span></span>
-        <span class="ln">  <span class="code-key">with:</span></span>
-        <span class="ln">    <span class="code-key">name:</span> <span class="code-str">ens-compliance-report</span></span>
-        <span class="ln">    <span class="code-key">path:</span> <span class="code-val">ens-report.json</span></span>
-      </div>
     </div>
   </section>
 

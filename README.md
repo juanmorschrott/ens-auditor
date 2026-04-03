@@ -6,7 +6,7 @@ Command-line tool to evaluate AWS infrastructure compliance with the Spanish Nat
 
 ## Requirements
 
-- Java 21+ (or GraalVM 21+ for native image)
+- Java 25+ (or GraalVM 25+ for native image)
 - Maven 3.9+
 - AWS credentials configured via the standard SDK chain
 
@@ -93,7 +93,7 @@ Configure credentials using any of the standard AWS SDK methods:
 
 - name: Upload audit report
   if: always()
-  uses: actions/upload-artifact@v4
+  uses: actions/upload-artifact@v5
   with:
     name: ens-compliance-report
     path: ens-report.json
