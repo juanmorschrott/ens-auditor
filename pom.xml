@@ -208,25 +208,6 @@
 			</build>
 		</profile>
 
-		<!-- Docker profile for building container images -->
-		<profile>
-			<id>docker</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.springframework.boot</groupId>
-						<artifactId>spring-boot-maven-plugin</artifactId>
-						<configuration>
-							<image>
-								<name>juanmorschrott/ens-auditor:${project.version}</name>
-								<builder>paketobuildpacks/builder:base</builder>
-							</image>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-
 		<!-- Native image profile (GraalVM) -->
 		<profile>
 			<id>native</id>
