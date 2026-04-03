@@ -1,0 +1,98 @@
+name: CI & Release
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+jobs:
+  # ── Build, test and (on tag) compile native binary ──────────────────────────
+  build:
+    name: Build & Test — ${{ matrix.artifact }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact: ens-auditor-linux-amd64
+            binary: ens-auditor
+          - os: ubuntu-24.04-arm
+            artifact: ens-auditor-linux-arm64
+            binary: ens-auditor
+          - os: windows-latest
+            artifact: ens-auditor-windows-amd64
+            binary: ens-auditor.exe
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up GraalVM JDK 25
+        uses: actions/setup-java@v5
+        with:
+          distribution: graalvm
+          java-version: 25
+          cache: maven
+
+      - name: Build JAR
+        run: mvn -B -U package -DskipTests
+
+      - name: Run tests
+        run: mvn test -q
+
+      # Native image is only built when releasing (tag push)
+      - name: Build native image
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: mvn -B -Pnative package -DskipTests
+
+      - name: Rename native binary to platform name
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: bash
+        run: |
+          if [ -f "target/${{ matrix.binary }}" ]; then
+            ext=""
+            if [[ "${{ matrix.binary }}" == *.exe ]]; then ext=".exe"; fi
+            cp "target/${{ matrix.binary }}" "target/${{ matrix.artifact }}${ext}"
+            echo "Binary ready: target/${{ matrix.artifact }}${ext}"
+          else
+            echo "Native binary not found — skipping rename"
+          fi
+
+      - name: Upload native binary
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: actions/upload-artifact@v5
+        with:
+          name: ${{ matrix.artifact }}
+          path: target/${{ matrix.artifact }}*
+          if-no-files-found: warn
+
+  # ── Create GitHub Release with all platform binaries ────────────────────────
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download all platform binaries
+        uses: actions/download-artifact@v5
+        with:
+          path: release-artifacts
+          merge-multiple: true
+
+      - name: List release artifacts
+        run: ls -lh release-artifacts/
+
+      - name: Create GitHub Release and upload binaries
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          files: release-artifacts/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

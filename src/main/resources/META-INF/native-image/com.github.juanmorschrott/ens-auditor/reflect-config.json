@@ -1,0 +1,20 @@
+[
+  {
+    "name": "com.github.juanmorschrott.ensauditor.compliance.internal.EnsControlsConfig",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.github.juanmorschrott.ensauditor.compliance.internal.EnsControlsConfig$ModuleConfig",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.github.juanmorschrott.ensauditor.compliance.internal.EnsControlsConfig$ControlConfig",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  }
+]

@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: ens-auditor
+  main:
+    web-application-type: none
+    banner-mode: off
+    log-startup-info: false
+
+aws:
+  region: ${AWS_REGION:}
+  credentials:
+    provider: default
+
+ens-auditor:
+  controls-path: classpath:ens-controls.yaml
+  max-concurrent-evaluations: 4
+  timeout-seconds: 300
+
+logging:
+  level:
+    root: WARN
+    com.github.juanmorschrott.ensauditor: WARN

@@ -1,0 +1,9 @@
+{
+  "resources": {
+    "includes": [
+      {"pattern": "ens-controls\\.yaml$"},
+      {"pattern": "application\\.yaml$"},
+      {"pattern": "logback-spring\\.xml$"}
+    ]
+  }
+}

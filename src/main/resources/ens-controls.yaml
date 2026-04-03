@@ -1,0 +1,147 @@
+# ENS (Esquema Nacional de Seguridad) Control Registry
+# This file maps ENS compliance controls to technical evaluations
+# Each control belongs to a pillar (Module) and describes security requirements
+#
+# Only automatable controls with a matching evaluator are included.
+# Non-automatable ENS requirements (governance, policies, risk assessments)
+# should be tracked externally as manual evidence.
+
+modules:
+  - name: "C2"
+    display_name: "Data Security"
+    controls:
+      - id: "ens.s3.encryption"
+        name: "S3 encryption at rest"
+        description: "Verify that S3 buckets have default encryption enabled"
+        severity: CRITICAL
+        automatable: true
+        affected_resources:
+          - s3:bucket
+        evaluators:
+          - s3
+
+      - id: "ens.s3.logging"
+        name: "S3 access logging"
+        description: "Verify that S3 buckets have access logs enabled"
+        severity: HIGH
+        automatable: true
+        affected_resources:
+          - s3:bucket
+        evaluators:
+          - s3
+
+      - id: "ens.rds.encryption"
+        name: "RDS encryption at rest"
+        description: "Verify that RDS instances have storage encryption enabled"
+        severity: CRITICAL
+        automatable: true
+        affected_resources:
+          - rds:db
+        evaluators:
+          - rds
+
+      - id: "ens.rds.logging"
+        name: "RDS CloudWatch logging"
+        description: "Verify that RDS instances have CloudWatch logging enabled"
+        severity: HIGH
+        automatable: true
+        affected_resources:
+          - rds:db
+        evaluators:
+          - rds
+
+      - id: "ens.rds.kms-key"
+        name: "RDS KMS key usage"
+        description: "Verify that encrypted RDS instances are tied to KMS keys"
+        severity: CRITICAL
+        automatable: true
+        affected_resources:
+          - rds:db
+        evaluators:
+          - rds
+
+  - name: "C3"
+    display_name: "Access and Identity Security"
+    controls:
+      - id: "ens.iam.mfa"
+        name: "Multi-factor authentication"
+        description: "Verify that MFA is enabled for all IAM users"
+        severity: HIGH
+        automatable: true
+        affected_resources:
+          - iam:user
+        evaluators:
+          - iam
+
+      - id: "ens.iam.least-privilege"
+        name: "Least privilege access"
+        description: "Verify that IAM roles do not attach overly broad managed policies"
+        severity: HIGH
+        automatable: true
+        affected_resources:
+          - iam:role
+        evaluators:
+          - iam
+
+      - id: "ens.iam.unused-credentials"
+        name: "Unused credentials"
+        description: "Verify that IAM access keys are rotated and unused keys are disabled"
+        severity: HIGH
+        automatable: true
+        affected_resources:
+          - iam:user
+        evaluators:
+          - iam
+
+      - id: "ens.rds.iam-auth"
+        name: "RDS IAM database authentication"
+        description: "Verify that RDS instances have IAM DB authentication enabled"
+        severity: HIGH
+        automatable: true
+        affected_resources:
+          - rds:db
+        evaluators:
+          - rds
+
+  - name: "C4"
+    display_name: "Infrastructure Security"
+    controls:
+      - id: "ens.s3.public-access"
+        name: "S3 public access block"
+        description: "Verify that S3 buckets block public access"
+        severity: CRITICAL
+        automatable: true
+        affected_resources:
+          - s3:bucket
+        evaluators:
+          - s3
+
+      - id: "ens.s3.versioning"
+        name: "S3 versioning enabled"
+        description: "Verify that S3 buckets have versioning enabled"
+        severity: HIGH
+        automatable: true
+        affected_resources:
+          - s3:bucket
+        evaluators:
+          - s3
+
+      - id: "ens.rds.backup"
+        name: "RDS automated backups"
+        description: "Verify that RDS instances have automated backups enabled"
+        severity: HIGH
+        automatable: true
+        affected_resources:
+          - rds:db
+        evaluators:
+          - rds
+
+      - id: "ens.rds.multi-az"
+        name: "RDS high availability"
+        description: "Verify that RDS instances are deployed with multi-AZ"
+        severity: HIGH
+        automatable: true
+        affected_resources:
+          - rds:db
+        evaluators:
+          - rds

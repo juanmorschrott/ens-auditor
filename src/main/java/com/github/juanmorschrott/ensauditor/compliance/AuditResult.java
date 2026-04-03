@@ -1,0 +1,153 @@
+package com.github.juanmorschrott.ensauditor.compliance;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+/**
+ * Represents a complete ENS compliance audit result.
+ * Mutable class for building audit results progressively.
+ */
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class AuditResult {
+    private String auditId;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
+    private List<ControlEvaluationResult> controlResults;
+    private Map<String, ComplianceLevel> moduleLevels;
+    private ComplianceLevel overallCompliance;
+    private String awsAccount;
+    private String awsRegion;
+    private Map<String, Object> metadata;
+
+    public AuditResult() {
+        this.controlResults = new ArrayList<>();
+        this.moduleLevels = new HashMap<>();
+        this.metadata = new HashMap<>();
+        this.startTime = LocalDateTime.now();
+        this.auditId = UUID.randomUUID().toString();
+    }
+
+    public void addControlResult(ControlEvaluationResult result) {
+        this.controlResults.add(result);
+    }
+
+    public void calculateComplianceLevels() {
+        // Group results by module (extracted from controlId format: MODULE.CONTROL)
+        Map<String, List<ControlEvaluationResult>> resultsByModule = controlResults.stream()
+                .collect(Collectors.groupingBy(this::extractModule));
+
+        // Calculate compliance level per module
+        resultsByModule.forEach((module, results) -> {
+            long compliant = results.stream()
+                    .filter(r -> r.status() == ControlStatus.COMPLIANT)
+                    .count();
+            double percentage = (double) compliant / results.size();
+            moduleLevels.put(module, ComplianceLevel.fromCompliancePercentage(percentage));
+        });
+
+        // Calculate overall compliance
+        long totalCompliant = controlResults.stream()
+                .filter(r -> r.status() == ControlStatus.COMPLIANT)
+                .count();
+        double overallPercentage = (double) totalCompliant / controlResults.size();
+        this.overallCompliance = ComplianceLevel.fromCompliancePercentage(overallPercentage);
+
+        this.endTime = LocalDateTime.now();
+    }
+
+    private String extractModule(ControlEvaluationResult result) {
+        return extractModule(result.controlId());
+    }
+
+    private String extractModule(String controlId) {
+        if (controlId != null && controlId.contains(".")) {
+            return controlId.substring(0, controlId.indexOf("."));
+        }
+        return "UNKNOWN";
+    }
+
+    // Getters and Setters
+    public String getAuditId() {
+        return auditId;
+    }
+
+    public void setAuditId(String auditId) {
+        this.auditId = auditId;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public List<ControlEvaluationResult> getControlResults() {
+        return controlResults;
+    }
+
+    public void setControlResults(List<ControlEvaluationResult> controlResults) {
+        this.controlResults = controlResults;
+    }
+
+    public Map<String, ComplianceLevel> getModuleLevels() {
+        return moduleLevels;
+    }
+
+    public void setModuleLevels(Map<String, ComplianceLevel> moduleLevels) {
+        this.moduleLevels = moduleLevels;
+    }
+
+    public ComplianceLevel getOverallCompliance() {
+        return overallCompliance;
+    }
+
+    public void setOverallCompliance(ComplianceLevel overallCompliance) {
+        this.overallCompliance = overallCompliance;
+    }
+
+    public String getAwsAccount() {
+        return awsAccount;
+    }
+
+    public void setAwsAccount(String awsAccount) {
+        this.awsAccount = awsAccount;
+    }
+
+    public String getAwsRegion() {
+        return awsRegion;
+    }
+
+    public void setAwsRegion(String awsRegion) {
+        this.awsRegion = awsRegion;
+    }
+
+    public Map<String, Object> getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Map<String, Object> metadata) {
+        this.metadata = metadata;
+    }
+
+    @Override
+    public String toString() {
+        return "AuditResult{" +
+                "auditId='" + auditId + '\'' +
+                ", overallCompliance=" + overallCompliance +
+                ", controlResults=" + controlResults.size() +
+                '}';
+    }
+}
