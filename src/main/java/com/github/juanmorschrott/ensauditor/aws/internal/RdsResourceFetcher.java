@@ -13,7 +13,7 @@ import software.amazon.awssdk.services.rds.model.Tag;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
 /**
@@ -25,9 +25,11 @@ public class RdsResourceFetcher implements InternalResourceFetcher {
     private static final Logger log = LoggerFactory.getLogger(RdsResourceFetcher.class);
 
     private final RdsClient rdsClient;
+    private final ExecutorService executor;
 
-    public RdsResourceFetcher(RdsClient rdsClient) {
+    public RdsResourceFetcher(RdsClient rdsClient, ExecutorService virtualThreadExecutor) {
         this.rdsClient = rdsClient;
+        this.executor = virtualThreadExecutor;
     }
 
     /**
@@ -38,16 +40,14 @@ public class RdsResourceFetcher implements InternalResourceFetcher {
     public List<RdsInstanceDto> fetchInstances() {
         List<DBInstance> instances = rdsClient.describeDBInstancesPaginator().dbInstances().stream().toList();
 
-        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
-            List<CompletableFuture<RdsInstanceDto>> futures = instances.stream()
-                    .map(instance -> CompletableFuture.supplyAsync(
-                            () -> fetchInstance(instance.dbInstanceIdentifier()), executor))
-                    .toList();
+        List<CompletableFuture<RdsInstanceDto>> futures = instances.stream()
+                .map(instance -> CompletableFuture.supplyAsync(
+                        () -> fetchInstance(instance.dbInstanceIdentifier()), executor))
+                .toList();
 
-            return futures.stream()
-                    .map(CompletableFuture::join)
-                    .collect(Collectors.toList());
-        }
+        return futures.stream()
+                .map(CompletableFuture::join)
+                .collect(Collectors.toList());
     }
 
     /**

@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
 
@@ -28,10 +28,12 @@ public class IamResourceFetcher implements InternalResourceFetcher {
     private static final Logger log = LoggerFactory.getLogger(IamResourceFetcher.class);
 
     private final IamClient iamClient;
+    private final ExecutorService executor;
     private final Semaphore semaphore = new Semaphore(10); // Limit to 10 concurrent IAM calls
 
-    public IamResourceFetcher(IamClient iamClient) {
+    public IamResourceFetcher(IamClient iamClient, ExecutorService virtualThreadExecutor) {
         this.iamClient = iamClient;
+        this.executor = virtualThreadExecutor;
     }
 
     /**
@@ -42,25 +44,23 @@ public class IamResourceFetcher implements InternalResourceFetcher {
     public List<IamPrincipalDto> fetchUsers() {
         List<User> users = iamClient.listUsersPaginator().users().stream().toList();
 
-        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
-            List<CompletableFuture<IamPrincipalDto>> futures = users.stream()
-                    .map(user -> CompletableFuture.supplyAsync(() -> {
-                        try {
-                            semaphore.acquire();
-                            return fetchUser(user.userName());
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                            throw new RuntimeException(e);
-                        } finally {
-                            semaphore.release();
-                        }
-                    }, executor))
-                    .toList();
+        List<CompletableFuture<IamPrincipalDto>> futures = users.stream()
+                .map(user -> CompletableFuture.supplyAsync(() -> {
+                    try {
+                        semaphore.acquire();
+                        return fetchUser(user.userName());
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        throw new RuntimeException(e);
+                    } finally {
+                        semaphore.release();
+                    }
+                }, executor))
+                .toList();
 
-            return futures.stream()
-                    .map(CompletableFuture::join)
-                    .collect(Collectors.toList());
-        }
+        return futures.stream()
+                .map(CompletableFuture::join)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -71,25 +71,23 @@ public class IamResourceFetcher implements InternalResourceFetcher {
     public List<IamPrincipalDto> fetchRoles() {
         List<Role> roles = iamClient.listRolesPaginator().roles().stream().toList();
 
-        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
-            List<CompletableFuture<IamPrincipalDto>> futures = roles.stream()
-                    .map(role -> CompletableFuture.supplyAsync(() -> {
-                        try {
-                            semaphore.acquire();
-                            return fetchRole(role.roleName());
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                            throw new RuntimeException(e);
-                        } finally {
-                            semaphore.release();
-                        }
-                    }, executor))
-                    .toList();
+        List<CompletableFuture<IamPrincipalDto>> futures = roles.stream()
+                .map(role -> CompletableFuture.supplyAsync(() -> {
+                    try {
+                        semaphore.acquire();
+                        return fetchRole(role.roleName());
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        throw new RuntimeException(e);
+                    } finally {
+                        semaphore.release();
+                    }
+                }, executor))
+                .toList();
 
-            return futures.stream()
-                    .map(CompletableFuture::join)
-                    .collect(Collectors.toList());
-        }
+        return futures.stream()
+                .map(CompletableFuture::join)
+                .collect(Collectors.toList());
     }
 
     /**

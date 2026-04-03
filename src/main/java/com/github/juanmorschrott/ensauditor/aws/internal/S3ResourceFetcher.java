@@ -12,7 +12,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
 /**
@@ -24,9 +24,11 @@ public class S3ResourceFetcher implements InternalResourceFetcher {
     private static final Logger log = LoggerFactory.getLogger(S3ResourceFetcher.class);
 
     private final S3Client s3Client;
+    private final ExecutorService executor;
 
-    public S3ResourceFetcher(S3Client s3Client) {
+    public S3ResourceFetcher(S3Client s3Client, ExecutorService virtualThreadExecutor) {
         this.s3Client = s3Client;
+        this.executor = virtualThreadExecutor;
     }
 
     /**
@@ -37,15 +39,13 @@ public class S3ResourceFetcher implements InternalResourceFetcher {
     public List<S3BucketDto> fetchBuckets() {
         List<Bucket> buckets = s3Client.listBuckets().buckets();
 
-        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
-            List<CompletableFuture<S3BucketDto>> futures = buckets.stream()
-                    .map(bucket -> CompletableFuture.supplyAsync(() -> fetchBucket(bucket.name()), executor))
-                    .toList();
+        List<CompletableFuture<S3BucketDto>> futures = buckets.stream()
+                .map(bucket -> CompletableFuture.supplyAsync(() -> fetchBucket(bucket.name()), executor))
+                .toList();
 
-            return futures.stream()
-                    .map(CompletableFuture::join)
-                    .collect(Collectors.toList());
-        }
+        return futures.stream()
+                .map(CompletableFuture::join)
+                .collect(Collectors.toList());
     }
 
     /**

@@ -17,13 +17,13 @@ Command-line tool to evaluate AWS infrastructure compliance with the Spanish Nat
 ./mvnw clean install
 
 # Run an audit (table output)
-java -jar target/ens-auditor-0.1.0-SNAPSHOT.jar audit
+java -jar target/ens-auditor-0.1.1-SNAPSHOT.jar audit
 
 # Run with JSON output saved to file
-java -jar target/ens-auditor-0.1.0-SNAPSHOT.jar audit --output json --output-file report.json
+java -jar target/ens-auditor-0.1.1-SNAPSHOT.jar audit --output json --output-file report.json
 
 # List available controls
-java -jar target/ens-auditor-0.1.0-SNAPSHOT.jar list-controls
+java -jar target/ens-auditor-0.1.1-SNAPSHOT.jar list-controls
 ```
 
 ### Build native executable (GraalVM)
@@ -132,8 +132,8 @@ All CI and release logic lives in a single workflow: `.github/workflows/ci.yml`.
 To publish a new release:
 
 ```bash
-git tag v0.1.0
-git push origin v0.1.0
+git tag v0.1.1
+git push origin v0.1.1
 ```
 
 The workflow builds the native image for each platform and creates a GitHub Release with all binaries attached.
