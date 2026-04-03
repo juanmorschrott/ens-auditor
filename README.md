@@ -43,8 +43,6 @@ Pre-built native binaries are available on [GitHub Releases](https://github.com/
 |-----------------------|---------------------------------|
 | Linux (amd64)         | `ens-auditor-linux-amd64`       |
 | Linux (arm64)         | `ens-auditor-linux-arm64`       |
-| macOS (Apple Silicon) | `ens-auditor-macos-arm64`       |
-| macOS (Intel)         | `ens-auditor-macos-amd64`       |
 | Windows (amd64)       | `ens-auditor-windows-amd64.exe` |
 
 ## Commands
@@ -127,15 +125,15 @@ All CI and release logic lives in a single workflow: `.github/workflows/ci.yml`.
 
 | Event                    | What happens                                                          |
 |--------------------------|-----------------------------------------------------------------------|
-| Pull request to `main`   | Build JAR + run tests on all 5 platforms                              |
-| Push of a `v*` tag       | Build JAR + tests + native image on all 5 platforms + GitHub Release  |
+| Pull request to `main`   | Build JAR + run tests on all 3 platforms                              |
+| Push of a `v*` tag       | Build JAR + tests + native image on all 3 platforms + GitHub Release  |
 | Manual `workflow_dispatch` | Same as tag push                                                    |
 
 To publish a new release:
 
 ```bash
-git tag v0.2.0
-git push origin v0.2.0
+git tag v0.1.0
+git push origin v0.1.0
 ```
 
 The workflow builds the native image for each platform and creates a GitHub Release with all binaries attached.
