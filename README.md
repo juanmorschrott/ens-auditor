@@ -125,8 +125,8 @@ The workflow runs the build and tests on all supported OS matrices. Native image
 To publish a new release:
 
 ```bash
-git tag v0.1.2
-git push origin v0.1.2
+git tag v0.1.3
+git push origin v0.1.3
 ```
 
 The workflow builds the native image for each platform and creates a GitHub Release with all binaries attached.
