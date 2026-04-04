@@ -59,14 +59,7 @@ public class AuditResult {
     }
 
     private String extractModule(ControlEvaluationResult result) {
-        return extractModule(result.controlId());
-    }
-
-    private String extractModule(String controlId) {
-        if (controlId != null && controlId.contains(".")) {
-            return controlId.substring(0, controlId.indexOf("."));
-        }
-        return "UNKNOWN";
+        return result.module() != null ? result.module() : "UNKNOWN";
     }
 
     // Getters and Setters

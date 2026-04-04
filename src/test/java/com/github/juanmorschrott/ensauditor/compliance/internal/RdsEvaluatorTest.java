@@ -28,7 +28,7 @@ class RdsEvaluatorTest {
     private RdsEvaluator evaluator;
 
     private ControlDefinition control(String id) {
-        return new ControlDefinition(id, "test", null, null, null, null);
+        return new ControlDefinition(id, "mp.si", "test", null, null, null, null);
     }
 
     // --- No instances → compliant ---

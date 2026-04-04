@@ -13,14 +13,15 @@ class ControlEvaluationResultTest {
     @Test
     void testRecordConstruction() {
         ControlEvaluationResult result = new ControlEvaluationResult(
-                "C1.1",
-                "Test Control",
-                ControlStatus.COMPLIANT,
-                SeverityLevel.HIGH,
-                "my-bucket",
-                ResourceType.S3_BUCKET,
-                "Configuration is compliant",
-                null,
+                "C1.1", 
+                "Test Control", 
+                "mp.si", 
+                ControlStatus.COMPLIANT, 
+                SeverityLevel.HIGH, 
+                "my-bucket", 
+                ResourceType.S3_BUCKET, 
+                "Configuration is compliant", 
+                null, 
                 null
         );
 

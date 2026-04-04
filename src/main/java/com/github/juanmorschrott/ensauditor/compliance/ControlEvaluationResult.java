@@ -15,6 +15,7 @@ import java.util.Map;
 public record ControlEvaluationResult(
     String controlId,
     String controlName,
+    String module,
     ControlStatus status,
     SeverityLevel severity,
     String resourceId,
@@ -39,20 +40,20 @@ public record ControlEvaluationResult(
      * Convenience constructor with minimal fields.
      */
     public ControlEvaluationResult(String controlId, ControlStatus status) {
-        this(controlId, null, status, null, null, null, null, null, null);
+        this(controlId, null, null, status, null, null, null, null, null, null);
     }
 
     /**
      * Convenience constructor for evaluation with resource.
      */
     public ControlEvaluationResult(String controlId, String resourceId, ControlStatus status) {
-        this(controlId, null, status, null, resourceId, null, null, null, null);
+        this(controlId, null, null, status, null, resourceId, null, null, null, null);
     }
 
     /**
      * Convenience constructor for evaluation with findings.
      */
     public ControlEvaluationResult(String controlId, ControlStatus status, String findings) {
-        this(controlId, null, status, null, null, null, findings, null, null);
+        this(controlId, null, null, status, null, null, null, findings, null, null);
     }
 }

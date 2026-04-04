@@ -11,6 +11,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record ControlDefinition(
         String controlId,
+        String module,
         String name,
         String description,
         SeverityLevel severity,
