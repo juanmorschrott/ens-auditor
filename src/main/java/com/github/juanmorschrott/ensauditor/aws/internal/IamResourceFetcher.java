@@ -28,12 +28,12 @@ public class IamResourceFetcher implements InternalResourceFetcher {
     private static final Logger log = LoggerFactory.getLogger(IamResourceFetcher.class);
 
     private final IamClient iamClient;
-    private final ExecutorService executor;
+    private final ExecutorService executorService;
     private final Semaphore semaphore = new Semaphore(10); // Limit to 10 concurrent IAM calls
 
-    public IamResourceFetcher(IamClient iamClient, ExecutorService virtualThreadExecutor) {
+    public IamResourceFetcher(IamClient iamClient, ExecutorService executorService) {
         this.iamClient = iamClient;
-        this.executor = virtualThreadExecutor;
+        this.executorService = executorService;
     }
 
     /**
@@ -55,7 +55,7 @@ public class IamResourceFetcher implements InternalResourceFetcher {
                     } finally {
                         semaphore.release();
                     }
-                }, executor))
+                }, executorService))
                 .toList();
 
         return futures.stream()
@@ -82,7 +82,7 @@ public class IamResourceFetcher implements InternalResourceFetcher {
                     } finally {
                         semaphore.release();
                     }
-                }, executor))
+                }, executorService))
                 .toList();
 
         return futures.stream()

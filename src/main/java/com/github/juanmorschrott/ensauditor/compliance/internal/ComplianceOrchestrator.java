@@ -31,6 +31,30 @@ class ComplianceOrchestrator implements ComplianceService {
         log.info("Initialized {} resource evaluators", evaluatorsByType.size());
     }
 
+    @Override
+    public List<ControlEvaluationResult> evaluateControls(List<ControlDefinition> controls) {
+        int total = controls.size();
+        List<ControlEvaluationResult> results = new java.util.ArrayList<>();
+
+        for (int i = 0; i < total; i++) {
+            ControlDefinition control = controls.get(i);
+            int percentage = (int) (((double) (i + 1) / total) * 100);
+            
+            // Simple progress indicator to System.err (to keep System.out clean for JSON outputs)
+            System.err.printf("\rAudit Progress: [%-20s] %d%% (%d/%d) %s",
+                    "=".repeat(percentage / 5),
+                    percentage,
+                    (i + 1),
+                    total,
+                    control.controlId());
+
+            results.add(this.evaluateControl(control));
+        }
+        System.err.print("\r" + " ".repeat(100) + "\r"); // Clear progress line
+        System.err.println("Audit completed.\n");
+        return results;
+    }
+
     private ControlEvaluationResult evaluateControl(ControlDefinition control) {
         try {
             if (control.affectedResourceTypes() == null || control.affectedResourceTypes().isEmpty()) {
@@ -58,29 +82,5 @@ class ComplianceOrchestrator implements ComplianceService {
             log.warn("Error evaluating control {}: {}", control.controlId(), e.getMessage());
             throw new ControlEvaluationException("Failed to evaluate control: " + control.controlId(), e);
         }
-    }
-
-    @Override
-    public List<ControlEvaluationResult> evaluateControls(List<ControlDefinition> controls) {
-        int total = controls.size();
-        List<ControlEvaluationResult> results = new java.util.ArrayList<>();
-
-        for (int i = 0; i < total; i++) {
-            ControlDefinition control = controls.get(i);
-            int percentage = (int) (((double) (i + 1) / total) * 100);
-            
-            // Simple progress indicator to System.err (to keep System.out clean for JSON outputs)
-            System.err.printf("\rAudit Progress: [%-20s] %d%% (%d/%d) %s",
-                    "=".repeat(percentage / 5),
-                    percentage,
-                    (i + 1),
-                    total,
-                    control.controlId());
-
-            results.add(this.evaluateControl(control));
-        }
-        System.err.print("\r" + " ".repeat(100) + "\r"); // Clear progress line
-        System.err.println("Audit completed.\n");
-        return results;
     }
 }

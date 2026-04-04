@@ -25,11 +25,11 @@ public class RdsResourceFetcher implements InternalResourceFetcher {
     private static final Logger log = LoggerFactory.getLogger(RdsResourceFetcher.class);
 
     private final RdsClient rdsClient;
-    private final ExecutorService executor;
+    private final ExecutorService executorService;
 
-    public RdsResourceFetcher(RdsClient rdsClient, ExecutorService virtualThreadExecutor) {
+    public RdsResourceFetcher(RdsClient rdsClient, ExecutorService executorService) {
         this.rdsClient = rdsClient;
-        this.executor = virtualThreadExecutor;
+        this.executorService = executorService;
     }
 
     /**
@@ -42,7 +42,7 @@ public class RdsResourceFetcher implements InternalResourceFetcher {
 
         List<CompletableFuture<RdsInstanceDto>> futures = instances.stream()
                 .map(instance -> CompletableFuture.supplyAsync(
-                        () -> fetchInstance(instance.dbInstanceIdentifier()), executor))
+                        () -> fetchInstance(instance.dbInstanceIdentifier()), executorService))
                 .toList();
 
         return futures.stream()

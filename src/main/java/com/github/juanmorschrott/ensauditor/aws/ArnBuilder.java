@@ -4,6 +4,7 @@ package com.github.juanmorschrott.ensauditor.aws;
  * Utility for building and parsing AWS ARNs (Amazon Resource Names).
  */
 public class ArnBuilder {
+
     private String partition = "aws";
     private String service;
     private String region;
@@ -67,6 +68,9 @@ public class ArnBuilder {
     /**
      * Container for parsed ARN components.
      */
-    public record ArnComponents(String partition, String service, String region,
-                                String accountId, String resource) {}
+    public record ArnComponents(String partition, 
+                                String service, 
+                                String region,
+                                String accountId, 
+                                String resource) {}
 }

@@ -24,11 +24,11 @@ public class S3ResourceFetcher implements InternalResourceFetcher {
     private static final Logger log = LoggerFactory.getLogger(S3ResourceFetcher.class);
 
     private final S3Client s3Client;
-    private final ExecutorService executor;
+    private final ExecutorService executorService;
 
-    public S3ResourceFetcher(S3Client s3Client, ExecutorService virtualThreadExecutor) {
+    public S3ResourceFetcher(S3Client s3Client, ExecutorService executorService) {
         this.s3Client = s3Client;
-        this.executor = virtualThreadExecutor;
+        this.executorService = executorService;
     }
 
     /**
@@ -40,7 +40,7 @@ public class S3ResourceFetcher implements InternalResourceFetcher {
         List<Bucket> buckets = s3Client.listBuckets().buckets();
 
         List<CompletableFuture<S3BucketDto>> futures = buckets.stream()
-                .map(bucket -> CompletableFuture.supplyAsync(() -> fetchBucket(bucket.name()), executor))
+                .map(bucket -> CompletableFuture.supplyAsync(() -> fetchBucket(bucket.name()), executorService))
                 .toList();
 
         return futures.stream()

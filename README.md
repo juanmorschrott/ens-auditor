@@ -2,7 +2,9 @@
 
 Command-line tool to evaluate AWS infrastructure compliance with the Spanish National Security Scheme (ENS) and CCN-STIC 887.
 
-**[Documentation and downloads](https://juanmorschrott.github.io/ens-auditor/) · [GitHub Releases](https://github.com/juanmorschrott/ens-auditor/releases)**
+[Documentation](https://juanmorschrott.github.io/ens-auditor/) 
+
+[GitHub Releases](https://github.com/juanmorschrott/ens-auditor/releases)
 
 ## Requirements
 
@@ -13,24 +15,9 @@ Command-line tool to evaluate AWS infrastructure compliance with the Spanish Nat
 ## Quick start
 
 ```bash
-# Build
-./mvnw clean install
-
-# Run an audit (table output)
-java -jar target/ens-auditor-0.1.1-SNAPSHOT.jar audit
-
-# Run with JSON output saved to file
-java -jar target/ens-auditor-0.1.1-SNAPSHOT.jar audit --output json --output-file report.json
-
-# List available controls
-java -jar target/ens-auditor-0.1.1-SNAPSHOT.jar list-controls
-```
-
-### Build native executable (GraalVM)
-
-```bash
 ./mvnw -Pnative package -DskipTests
 
+# e.g.
 ./target/ens-auditor audit --output table
 ./target/ens-auditor --help
 ```
@@ -45,7 +32,7 @@ Pre-built native binaries are available on [GitHub Releases](https://github.com/
 | Linux (arm64)         | `ens-auditor-linux-arm64`       |
 | Windows (amd64)       | `ens-auditor-windows-amd64.exe` |
 
-## Commands
+## Available commands
 
 | Command               | Description                                 |
 |-----------------------|---------------------------------------------|
@@ -54,7 +41,7 @@ Pre-built native binaries are available on [GitHub Releases](https://github.com/
 | `status`              | Show audit status and compliance summary    |
 | `generate-completion` | Generate shell completion script (bash/zsh) |
 
-### `audit` options
+### Options for `audit`
 
 | Option                     | Description                                                       |
 |----------------------------|-------------------------------------------------------------------|
@@ -81,7 +68,9 @@ Configure credentials using any of the standard AWS SDK methods:
 - Credentials file: `~/.aws/credentials` / `~/.aws/config`
 - IAM role, SSO, or federated login
 
-## Pipeline integration
+## CI/CD integration
+
+This CLI can be integrated into any CI/CD pipeline that can run shell commands. The examples below show GitHub Actions and GitLab CI, but the same `./ens-auditor audit` invocation can be used in Jenkins, Azure DevOps, GitHub Actions, GitLab CI, or any other system.
 
 ### GitHub Actions
 
@@ -111,6 +100,8 @@ ens-auditor:
 
 ## Tab completion
 
+Enable shell completion so users can type commands and options faster and with fewer typos.
+
 ```bash
 # bash
 ens-auditor generate-completion > /etc/bash_completion.d/ens-auditor
@@ -123,34 +114,32 @@ eval "$(ens-auditor generate-completion)"
 
 All CI and release logic lives in a single workflow: `.github/workflows/ci.yml`.
 
-| Event                    | What happens                                                          |
-|--------------------------|-----------------------------------------------------------------------|
-| Pull request to `main`   | Build JAR + run tests on all 3 platforms                              |
-| Push of a `v*` tag       | Build JAR + tests + native image on all 3 platforms + GitHub Release  |
-| Manual `workflow_dispatch` | Same as tag push                                                    |
+| Event                    | What happens                                                              |
+|--------------------------|---------------------------------------------------------------------------|
+| Pull request to `main`   | Build JAR + run tests on all 3 platforms                                  |
+| Push of a `v*` tag       | Build JAR + tests on all 3 platforms; native image + GitHub Release       |
+| Manual `workflow_dispatch` | Same as tag push                                                        |
+
+The workflow runs the build and tests on all supported OS matrices. Native image packaging is only performed on tagged releases, while pull requests only verify the JAR build and tests.
 
 To publish a new release:
 
 ```bash
-git tag v0.1.1
-git push origin v0.1.1
+git tag v0.1.2
+git push origin v0.1.2
 ```
 
 The workflow builds the native image for each platform and creates a GitHub Release with all binaries attached.
 
 ## ENS control coverage
 
-Controls are defined in `src/main/resources/ens-controls.yaml`. Each control specifies an `id`, `severity`, `affected_resources`, and the evaluator responsible for it.
+Controls are declared declaratively in `src/main/resources/ens-controls.yaml`. Each control block describes a compliance rule with fields like `id`, `severity`, `affected_resources`, and the evaluator that implements the check.
 
-Current automated coverage:
+At runtime, the CLI loads those definitions, maps them to the corresponding evaluators, and evaluates the matched AWS resources.
 
-| Evaluator      | Controls                                                           |
-|----------------|--------------------------------------------------------------------|
-| `S3Evaluator`  | Encryption, public access block, versioning, access logging        |
-| `RdsEvaluator` | Encryption, audit logging, IAM auth, multi-AZ, backups, KMS key   |
-| `IamEvaluator` | MFA enforcement, least-privilege checks, unused credentials        |
+A control is a compliance rule to verify. A resource is the AWS entity being inspected, such as an S3 bucket, RDS instance, or IAM principal.
 
-Only controls automatable via the AWS API are included. Non-automatable requirements (governance, risk assessments, incident workflows) must be tracked as manual evidence.
+Only controls that can be automated through the AWS API are included. Non-automatable ENS requirements (governance, risk assessments, incident workflows, etc.) must be managed as manual evidence.
 
 ## Contributing
 

@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.github.juanmorschrott</groupId>
 	<artifactId>ens-auditor</artifactId>
-	<version>0.1.1-SNAPSHOT</version>
+	<version>0.1.2-SNAPSHOT</version>
 	<name>ENS Auditor</name>
 	<description>Cloud compliance auditor for AWS according to Spanish ENS (Esquema Nacional de Seguridad) standard</description>
 	<url>https://github.com/juanmorschrott/ens-auditor</url>
