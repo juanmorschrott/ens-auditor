@@ -12,6 +12,7 @@ import software.amazon.awssdk.regions.providers.DefaultAwsRegionProviderChain;
 import software.amazon.awssdk.services.iam.IamClient;
 import software.amazon.awssdk.services.rds.RdsClient;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 /**
  * AWS SDK v2 configuration exposing service clients as Spring Beans.
@@ -51,5 +52,10 @@ public class AwsConfig {
     @Bean
     RdsClient rdsClient() {
         return RdsClient.builder().region(resolveRegion()).build();
+    }
+
+    @Bean
+    DynamoDbClient dynamoDbClient() {
+        return DynamoDbClient.builder().region(resolveRegion()).build();
     }
 }

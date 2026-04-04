@@ -1,8 +1,6 @@
-package com.github.juanmorschrott.ensauditor.aws.internal.s3;
+package com.github.juanmorschrott.ensauditor.aws.internal;
 
 import com.github.juanmorschrott.ensauditor.aws.S3BucketDto;
-import com.github.juanmorschrott.ensauditor.aws.internal.LocalStackTestConfiguration;
-import com.github.juanmorschrott.ensauditor.aws.internal.S3ResourceFetcher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

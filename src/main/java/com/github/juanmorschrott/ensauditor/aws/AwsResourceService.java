@@ -31,4 +31,10 @@ public interface AwsResourceService {
      * @return list of IAM role configurations
      */
     List<IamPrincipalDto> fetchIamRoles();
+
+    /**
+     * Fetches all DynamoDB tables.
+     * @return list of DynamoDB tables configurations
+     */
+    List<DynamoDBDto> fetchDynamoDBs();
 }

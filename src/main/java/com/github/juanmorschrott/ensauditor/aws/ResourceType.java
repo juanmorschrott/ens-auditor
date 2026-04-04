@@ -37,7 +37,12 @@ public enum ResourceType {
     /**
      * AWS VPC.
      */
-    VPC("ec2:vpc");
+    VPC("ec2:vpc"),
+    
+    /**
+     * AWS DynamoDB table.
+     */
+    DYNAMODB_TABLE("dynamodb:table");
 
     private final String identifier;
 

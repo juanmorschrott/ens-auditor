@@ -60,6 +60,29 @@ modules:
         evaluators:
           - rds
 
+      - id: "ens.dynamodb.encryption"
+        name: "DynamoDB Encryption"
+        ens_control: "[mp.si.2] Criptografía."
+        description: "Verificar que las tablas de DynamoDB están cifradas utilizando una clave KMS gestionada por el cliente (CMK)."
+        severity: CRITICAL
+        automatable: true
+        affected_resources:
+          - dynamodb:table
+        evaluators:
+          - dynamodb
+
+      - id: "ens.kms.rotation"
+        name: "KMS Key Rotation"
+        ens_control: "[op.exp.10] Protección de claves criptográficas."
+        description: "Verificar que las claves KMS gestionadas por el cliente tienen habilitada la rotación automática anual."
+        severity: HIGH
+        automatable: true
+        affected_resources:
+          - kms:key
+        evaluators:
+          - kms
+
+
   - name: "C3"
     display_name: "Access and Identity Security"
     controls:

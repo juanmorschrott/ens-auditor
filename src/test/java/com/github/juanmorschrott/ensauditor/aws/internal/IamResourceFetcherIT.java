@@ -1,8 +1,6 @@
-package com.github.juanmorschrott.ensauditor.aws.internal.iam;
+package com.github.juanmorschrott.ensauditor.aws.internal;
 
 import com.github.juanmorschrott.ensauditor.aws.IamPrincipalDto;
-import com.github.juanmorschrott.ensauditor.aws.internal.IamResourceFetcher;
-import com.github.juanmorschrott.ensauditor.aws.internal.LocalStackTestConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
