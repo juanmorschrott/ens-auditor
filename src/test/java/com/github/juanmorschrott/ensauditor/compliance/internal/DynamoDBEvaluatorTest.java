@@ -28,7 +28,7 @@ class DynamoDBEvaluatorTest {
     private DynamoDBEvaluator evaluator;
 
     private ControlDefinition control(String id) {
-        return new ControlDefinition(id, "mp.si", "test", null, null, null, null);
+        return new ControlDefinition(id, "mp.si", "test", null, null, null);
     }
 
     @Test

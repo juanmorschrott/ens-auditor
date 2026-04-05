@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.github.juanmorschrott.ensauditor.aws.ResourceType;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Represents the evaluation result of a single control.
@@ -21,8 +19,7 @@ public record ControlEvaluationResult(
     String resourceId,
     ResourceType resourceType,
     String findings,
-    LocalDateTime evaluatedAt,
-    Map<String, Object> metadata
+    LocalDateTime evaluatedAt
 ) {
     /**
      * Compact constructor with defaults.
@@ -31,29 +28,26 @@ public record ControlEvaluationResult(
         if (evaluatedAt == null) {
             evaluatedAt = LocalDateTime.now();
         }
-        if (metadata == null) {
-            metadata = new HashMap<>();
-        }
     }
 
     /**
      * Convenience constructor with minimal fields.
      */
     public ControlEvaluationResult(String controlId, ControlStatus status) {
-        this(controlId, null, null, status, null, null, null, null, null, null);
+        this(controlId, null, null, status, null, null, null, null, null);
     }
 
     /**
      * Convenience constructor for evaluation with resource.
      */
     public ControlEvaluationResult(String controlId, String resourceId, ControlStatus status) {
-        this(controlId, null, null, status, null, resourceId, null, null, null, null);
+        this(controlId, null, null, status, null, resourceId, null, null, null);
     }
 
     /**
      * Convenience constructor for evaluation with findings.
      */
     public ControlEvaluationResult(String controlId, ControlStatus status, String findings) {
-        this(controlId, null, null, status, null, null, null, findings, null, null);
+        this(controlId, null, null, status, null, null, null, findings, null);
     }
 }

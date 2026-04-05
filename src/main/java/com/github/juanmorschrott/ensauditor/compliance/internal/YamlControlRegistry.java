@@ -67,8 +67,7 @@ class YamlControlRegistry implements ControlRegistry {
                 c.name(),
                 c.description(),
                 SeverityLevel.valueOf(c.severity()),
-                c.affectedResources() != null ? c.affectedResources() : List.of(),
-                c.evaluators() != null ? c.evaluators() : List.of()
+                c.affectedResources() != null ? c.affectedResources() : List.of()
         );
     }
 

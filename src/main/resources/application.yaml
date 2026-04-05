@@ -13,8 +13,6 @@ aws:
 
 ens-auditor:
   controls-path: classpath:ens-controls.yaml
-  max-concurrent-evaluations: 4
-  timeout-seconds: 300
 
 logging:
   level:

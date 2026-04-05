@@ -12,20 +12,18 @@ import java.util.stream.Collectors;
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AuditResult {
-    private String auditId;
-    private LocalDateTime startTime;
+    private final String auditId;
+    private final LocalDateTime startTime;
     private LocalDateTime endTime;
-    private List<ControlEvaluationResult> controlResults;
-    private Map<String, ComplianceLevel> moduleLevels;
+    private final List<ControlEvaluationResult> controlResults;
+    private final Map<String, ComplianceLevel> moduleLevels;
     private ComplianceLevel overallCompliance;
     private String awsAccount;
     private String awsRegion;
-    private Map<String, Object> metadata;
 
     public AuditResult() {
         this.controlResults = new ArrayList<>();
         this.moduleLevels = new HashMap<>();
-        this.metadata = new HashMap<>();
         this.startTime = LocalDateTime.now();
         this.auditId = UUID.randomUUID().toString();
     }
@@ -62,53 +60,28 @@ public class AuditResult {
         return result.module() != null ? result.module() : "UNKNOWN";
     }
 
-    // Getters and Setters
     public String getAuditId() {
         return auditId;
-    }
-
-    public void setAuditId(String auditId) {
-        this.auditId = auditId;
     }
 
     public LocalDateTime getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(LocalDateTime startTime) {
-        this.startTime = startTime;
-    }
-
     public LocalDateTime getEndTime() {
         return endTime;
-    }
-
-    public void setEndTime(LocalDateTime endTime) {
-        this.endTime = endTime;
     }
 
     public List<ControlEvaluationResult> getControlResults() {
         return controlResults;
     }
 
-    public void setControlResults(List<ControlEvaluationResult> controlResults) {
-        this.controlResults = controlResults;
-    }
-
     public Map<String, ComplianceLevel> getModuleLevels() {
         return moduleLevels;
     }
 
-    public void setModuleLevels(Map<String, ComplianceLevel> moduleLevels) {
-        this.moduleLevels = moduleLevels;
-    }
-
     public ComplianceLevel getOverallCompliance() {
         return overallCompliance;
-    }
-
-    public void setOverallCompliance(ComplianceLevel overallCompliance) {
-        this.overallCompliance = overallCompliance;
     }
 
     public String getAwsAccount() {
@@ -125,14 +98,6 @@ public class AuditResult {
 
     public void setAwsRegion(String awsRegion) {
         this.awsRegion = awsRegion;
-    }
-
-    public Map<String, Object> getMetadata() {
-        return metadata;
-    }
-
-    public void setMetadata(Map<String, Object> metadata) {
-        this.metadata = metadata;
     }
 
     @Override

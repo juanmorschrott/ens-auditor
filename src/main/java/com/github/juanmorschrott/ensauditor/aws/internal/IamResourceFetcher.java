@@ -1,7 +1,6 @@
 package com.github.juanmorschrott.ensauditor.aws.internal;
 
 import com.github.juanmorschrott.ensauditor.aws.IamPrincipalDto;
-import com.github.juanmorschrott.ensauditor.aws.ResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -23,7 +22,7 @@ import java.util.stream.Collectors;
  * IAM-specific resource fetcher.
  */
 @Component
-public class IamResourceFetcher implements InternalResourceFetcher {
+class IamResourceFetcher {
 
     private static final Logger log = LoggerFactory.getLogger(IamResourceFetcher.class);
 
@@ -232,13 +231,4 @@ public class IamResourceFetcher implements InternalResourceFetcher {
         );
     }
 
-    @Override
-    public ResourceType getResourceType() {
-        return ResourceType.IAM_ROLE;
-    }
-
-    @Override
-    public String getName() {
-        return "IamResourceFetcher";
-    }
 }

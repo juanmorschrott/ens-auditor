@@ -22,7 +22,7 @@ class ReportServiceImpl implements ReportService {
 
     @Override
     public String presentAsJson(AuditResult result) {
-        return JsonUtils.toJsonPretty(result);
+        return JsonUtils.toJson(result);
     }
 
     @Override

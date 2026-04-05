@@ -15,15 +15,11 @@ public record ControlDefinition(
         String name,
         String description,
         SeverityLevel severity,
-        List<String> affectedResourceTypes,
-        List<String> evaluatorNames) {
+        List<String> affectedResourceTypes) {
 
     public ControlDefinition {
         if (affectedResourceTypes == null) {
             affectedResourceTypes = List.of();
-        }
-        if (evaluatorNames == null) {
-            evaluatorNames = List.of();
         }
     }
 }

@@ -21,7 +21,6 @@ class ControlEvaluationResultTest {
                 "my-bucket", 
                 ResourceType.S3_BUCKET, 
                 "Configuration is compliant", 
-                null, 
                 null
         );
 
@@ -40,7 +39,6 @@ class ControlEvaluationResultTest {
         assertEquals("C1.1", result.controlId());
         assertEquals(ControlStatus.COMPLIANT, result.status());
         assertNotNull(result.evaluatedAt());
-        assertNotNull(result.metadata());
     }
 
     @Test

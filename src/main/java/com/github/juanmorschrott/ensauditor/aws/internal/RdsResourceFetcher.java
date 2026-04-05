@@ -1,7 +1,6 @@
 package com.github.juanmorschrott.ensauditor.aws.internal;
 
 import com.github.juanmorschrott.ensauditor.aws.RdsInstanceDto;
-import com.github.juanmorschrott.ensauditor.aws.ResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -20,7 +19,7 @@ import java.util.stream.Collectors;
  * RDS-specific resource fetcher.
  */
 @Component
-public class RdsResourceFetcher implements InternalResourceFetcher {
+class RdsResourceFetcher {
 
     private static final Logger log = LoggerFactory.getLogger(RdsResourceFetcher.class);
 
@@ -102,13 +101,4 @@ public class RdsResourceFetcher implements InternalResourceFetcher {
         );
     }
 
-    @Override
-    public ResourceType getResourceType() {
-        return ResourceType.RDS_INSTANCE;
-    }
-
-    @Override
-    public String getName() {
-        return "RdsResourceFetcher";
-    }
 }

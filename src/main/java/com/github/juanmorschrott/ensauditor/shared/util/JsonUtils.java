@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 /**
- * Utility for JSON serialization and deserialization.
+ * Utility for JSON serialization.
  */
 public class JsonUtils {
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -28,32 +28,5 @@ public class JsonUtils {
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Failed to serialize to JSON", e);
         }
-    }
-
-    /**
-     * Serializes an object to pretty-printed JSON string.
-     * @param object the object to serialize
-     * @return formatted JSON string
-     */
-    public static String toJsonPretty(Object object) {
-        return toJson(object); // Already configured for pretty printing
-    }
-
-    /**
-     * Deserializes a JSON string to an object.
-     * @param json the JSON string
-     * @param valueType the target class
-     * @return deserialized object
-     */
-    public static <T> T fromJson(String json, Class<T> valueType) {
-        try {
-            return objectMapper.readValue(json, valueType);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Failed to deserialize from JSON", e);
-        }
-    }
-
-    public static ObjectMapper getObjectMapper() {
-        return objectMapper;
     }
 }

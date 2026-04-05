@@ -1,7 +1,6 @@
 package com.github.juanmorschrott.ensauditor.aws.internal;
 
 import com.github.juanmorschrott.ensauditor.aws.S3BucketDto;
-import com.github.juanmorschrott.ensauditor.aws.ResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -19,7 +18,7 @@ import java.util.stream.Collectors;
  * S3-specific resource fetcher.
  */
 @Component
-public class S3ResourceFetcher implements InternalResourceFetcher {
+class S3ResourceFetcher {
 
     private static final Logger log = LoggerFactory.getLogger(S3ResourceFetcher.class);
 
@@ -115,13 +114,4 @@ public class S3ResourceFetcher implements InternalResourceFetcher {
         );
     }
 
-    @Override
-    public ResourceType getResourceType() {
-        return ResourceType.S3_BUCKET;
-    }
-
-    @Override
-    public String getName() {
-        return "S3ResourceFetcher";
-    }
 }

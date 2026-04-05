@@ -1,7 +1,6 @@
 package com.github.juanmorschrott.ensauditor.aws.internal;
 
 import com.github.juanmorschrott.ensauditor.aws.DynamoDBDto;
-import com.github.juanmorschrott.ensauditor.aws.ResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -20,7 +19,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
 @Component
-public class DynamoDBResourceFetcher implements InternalResourceFetcher {
+class DynamoDBResourceFetcher {
 
     private static final Logger log = LoggerFactory.getLogger(DynamoDBResourceFetcher.class);
 
@@ -75,13 +74,4 @@ public class DynamoDBResourceFetcher implements InternalResourceFetcher {
         }
     }
 
-    @Override
-    public ResourceType getResourceType() {
-        return ResourceType.DYNAMODB_TABLE;
-    }
-
-    @Override
-    public String getName() {
-        return "DynamoDBResourceFetcher";
-    }
 }
