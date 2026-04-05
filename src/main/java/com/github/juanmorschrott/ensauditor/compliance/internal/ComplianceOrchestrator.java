@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 /**
@@ -32,26 +33,15 @@ class ComplianceOrchestrator implements ComplianceService {
     }
 
     @Override
-    public AuditResult evaluateControls(List<ControlDefinition> controls) {
+    public AuditResult evaluateControls(List<ControlDefinition> controls, BiConsumer<Integer, Integer> onProgress) {
         int total = controls.size();
         AuditResult auditResult = new AuditResult();
 
         for (int i = 0; i < total; i++) {
             ControlDefinition control = controls.get(i);
-            int percentage = (int) (((double) (i + 1) / total) * 100);
-            
-            // Simple progress indicator to System.err (to keep System.out clean for JSON outputs)
-            System.err.printf("\rAudit Progress: [%-20s] %d%% (%d/%d) %s",
-                    "=".repeat(percentage / 5),
-                    percentage,
-                    (i + 1),
-                    total,
-                    control.controlId());
-
             auditResult.addControlResult(this.evaluateControl(control));
+            onProgress.accept(i + 1, total);
         }
-        System.err.print("\r" + " ".repeat(100) + "\r"); // Clear progress line
-        System.err.println("Audit completed.\n");
 
         auditResult.calculateComplianceLevels();
         return auditResult;

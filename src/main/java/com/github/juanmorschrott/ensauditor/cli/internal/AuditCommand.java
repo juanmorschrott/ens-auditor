@@ -54,7 +54,13 @@ public class AuditCommand implements Callable<Integer> {
 
         log.info("Running audit of {} controls", controls.size());
 
-        AuditResult auditResult = complianceService.evaluateControls(controls);
+        AuditResult auditResult = complianceService.evaluateControls(controls, (current, total) -> {
+            int percentage = (int) (((double) current / total) * 100);
+            System.err.printf("\rAudit Progress: [%-20s] %d%% (%d/%d)",
+                    "=".repeat(percentage / 5), percentage, current, total);
+        });
+        System.err.print("\r" + " ".repeat(80) + "\r");
+        System.err.println("Audit completed.\n");
 
         String report = formatReport(auditResult);
 
@@ -90,7 +96,7 @@ public class AuditCommand implements Callable<Integer> {
 
         List<ControlDefinition> all = controlRegistry.getAllControls();
 
-        SeverityLevel minLevel = parseSeverity(minSeverity);
+        SeverityLevel minLevel = SeverityLevel.fromString(minSeverity);
         if (minLevel != null) {
             all = all.stream()
                     .filter(c -> c.severity() != null && c.severity().ordinal() <= minLevel.ordinal())
@@ -98,15 +104,5 @@ public class AuditCommand implements Callable<Integer> {
         }
 
         return all;
-    }
-
-    private SeverityLevel parseSeverity(String value) {
-        if (value == null || value.isBlank()) return null;
-        try {
-            return SeverityLevel.valueOf(value.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            log.warn("Unknown severity level '{}', ignoring filter.", value);
-            return null;
-        }
     }
 }
