@@ -9,17 +9,17 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
- * Default implementation of resource fetcher using AWS SDK v2.
+ * Default implementation of {@link AwsResourceService} using AWS SDK v2.
  */
 @Service
-class AwsResourceFetcher implements AwsResourceService {
+class DefaultAwsResourceService implements AwsResourceService {
 
     private final S3ResourceFetcher s3Fetcher;
     private final RdsResourceFetcher rdsFetcher;
     private final IamResourceFetcher iamFetcher;
     private final DynamoDBResourceFetcher dynamoDbFetcher;
 
-    public AwsResourceFetcher(
+    public DefaultAwsResourceService(
             S3ResourceFetcher s3Fetcher,
             RdsResourceFetcher rdsFetcher,
             IamResourceFetcher iamFetcher,

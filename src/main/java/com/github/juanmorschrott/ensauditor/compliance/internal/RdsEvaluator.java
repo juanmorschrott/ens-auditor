@@ -70,7 +70,7 @@ public class RdsEvaluator implements ResourceEvaluator {
                     .toList();
             // Automated backups must be enabled (retention > 0)
             case "ens.rds.backup" -> instances.stream()
-                    .filter(i -> i.backupRetentionPeriods() == null || i.backupRetentionPeriods() == 0)
+                    .filter(i -> i.backupRetentionPeriod() == null || i.backupRetentionPeriod() == 0)
                     .toList();
             // CloudWatch log exports must be enabled
             case "ens.rds.logging" -> instances.stream()

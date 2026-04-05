@@ -17,7 +17,7 @@ public record RdsInstanceDto(
         Boolean storageEncrypted,
         String kmsKeyId,
         Boolean multiAz,
-        Integer backupRetentionPeriods,
+        Integer backupRetentionPeriod,
         String preferredBackupWindow,
         Boolean enableCloudwatchLogsExports,
         Boolean enableIamDatabaseAuthentication,

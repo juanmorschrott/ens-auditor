@@ -3,8 +3,6 @@ package com.github.juanmorschrott.ensauditor.cli.internal;
 import com.github.juanmorschrott.ensauditor.compliance.ControlDefinition;
 import com.github.juanmorschrott.ensauditor.compliance.ControlRegistry;
 import com.github.juanmorschrott.ensauditor.compliance.SeverityLevel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -15,8 +13,6 @@ import java.util.concurrent.Callable;
 @Component
 @Command(name = "list-controls", description = "List available ENS controls", mixinStandardHelpOptions = true)
 public class ListControlsCommand implements Callable<Integer> {
-
-    private static final Logger log = LoggerFactory.getLogger(ListControlsCommand.class);
 
     private final ControlRegistry controlRegistry;
 
@@ -32,7 +28,7 @@ public class ListControlsCommand implements Callable<Integer> {
         List<ControlDefinition> controls = controlRegistry.getAllControls();
 
         if (minSeverity != null) {
-            SeverityLevel minLevel = parseSeverity(minSeverity);
+            SeverityLevel minLevel = SeverityLevel.fromString(minSeverity);
             if (minLevel != null) {
                 controls = controls.stream()
                         .filter(c -> c.severity() != null && c.severity().ordinal() <= minLevel.ordinal())
@@ -55,15 +51,5 @@ public class ListControlsCommand implements Callable<Integer> {
         }
         System.out.printf("%nTotal: %d control(s)%n", controls.size());
         return 0;
-    }
-
-    private SeverityLevel parseSeverity(String value) {
-        if (value == null || value.isBlank()) return null;
-        try {
-            return SeverityLevel.valueOf(value.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            log.warn("Unknown severity level '{}', ignoring filter.", value);
-            return null;
-        }
     }
 }

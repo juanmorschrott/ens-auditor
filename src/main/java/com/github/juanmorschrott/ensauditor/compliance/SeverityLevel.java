@@ -30,6 +30,20 @@ public enum SeverityLevel {
         this.displayName = displayName;
     }
 
+    /**
+     * Parses a severity level from a string, case-insensitive.
+     * @param value the string to parse
+     * @return the matching SeverityLevel, or null if blank or unknown
+     */
+    public static SeverityLevel fromString(String value) {
+        if (value == null || value.isBlank()) return null;
+        try {
+            return valueOf(value.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
     public String getDisplayName() {
         return displayName;
     }
