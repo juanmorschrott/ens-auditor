@@ -13,7 +13,7 @@ import picocli.CommandLine.Command;
         name = "ens-auditor",
         description = "AWS compliance auditor for Spanish ENS (Esquema Nacional de Seguridad)",
         mixinStandardHelpOptions = true,
-        version = "ens-auditor 0.1.3",
+        version = "ens-auditor 0.2.0",
         subcommands = {
                 AuditCommand.class,
                 ListControlsCommand.class,
