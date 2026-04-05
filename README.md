@@ -144,6 +144,7 @@ Only controls that can be automated through the AWS API are included. Non-automa
 ## Arquitecture
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#ffffff', 'clusterBkg': 'none', 'clusterBorder': '#666666' }}}%%
 graph TD
     %% CLI Layer
     subgraph CLI[Interface Layer / CLI]
@@ -202,7 +203,7 @@ graph TD
     %% Styles
     classDef primary fill:#1168bd,stroke:#0b4884,stroke-width:2px,color:#ffffff;
     classDef secondary fill:#85bbf0,stroke:#5d82a8,stroke-width:1px,color:#000000;
-    classDef config fill:#ebebeb,stroke:#999999,stroke-dasharray: 5 5,color:#333333;
+    classDef config fill:#ffffff,stroke:#999999,stroke-dasharray: 5 5,color:#333333;
     
     class Orchestrator primary;
     class Registry config;
