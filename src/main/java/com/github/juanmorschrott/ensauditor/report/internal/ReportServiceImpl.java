@@ -27,6 +27,7 @@ class ReportServiceImpl implements ReportService {
 
     @Override
     public String presentAsTable(AuditResult result) {
+
         List<ControlEvaluationResult> controls = result.getControlResults();
 
         // Column widths
@@ -92,13 +93,13 @@ class ReportServiceImpl implements ReportService {
 
         // Counts
         if (controls != null) {
-            long compliant   = controls.stream().filter(r -> r.status() == ControlStatus.COMPLIANT).count();
+            long compliant = controls.stream().filter(r -> r.status() == ControlStatus.COMPLIANT).count();
             long nonCompliant = controls.stream().filter(r -> r.status() == ControlStatus.NON_COMPLIANT).count();
             long notEvaluated = controls.stream().filter(r -> r.status() == ControlStatus.NOT_EVALUATED).count();
             sb.append("\n  COMPLIANT: ").append(compliant)
-              .append("  |  NON-COMPLIANT: ").append(nonCompliant)
-              .append("  |  NOT EVALUATED: ").append(notEvaluated)
-              .append('\n');
+                    .append("  |  NON-COMPLIANT: ").append(nonCompliant)
+                    .append("  |  NOT EVALUATED: ").append(notEvaluated)
+                    .append('\n');
         }
 
         return sb.toString();
@@ -123,25 +124,27 @@ class ReportServiceImpl implements ReportService {
         List<ControlEvaluationResult> controls = result.getControlResults();
 
         String rows = controls == null ? "" : controls.stream()
-                .map(r -> {
-                    String css = switch (r.status()) {
-                        case COMPLIANT    -> "compliant";
-                        case NON_COMPLIANT -> "noncompliant";
-                        default            -> "unevaluated";
-                    };
-                    return "<tr class=\"" + css + "\">"
-                            + "<td>" + esc(r.controlId()) + "</td>"
-                            + "<td>" + esc(r.controlName()) + "</td>"
-                            + "<td>" + esc(r.status()) + "</td>"
-                            + "<td>" + esc(r.severity()) + "</td>"
-                            + "<td>" + esc(r.findings()) + "</td>"
-                            + "</tr>";
-                })
-                .collect(Collectors.joining("\n"));
+                                              .map(r -> {
+                                                  String css = switch (r.status()) {
+                                                      case COMPLIANT     -> "compliant";
+                                                      case NON_COMPLIANT -> "noncompliant";
+                                                      default            -> "unevaluated";
+                                                  };
+                                                  return "<tr class=\"" + css + "\">"
+                                                         + "<td>" + esc(r.controlId()) + "</td>"
+                                                         + "<td>" + esc(r.controlName()) + "</td>"
+                                                         + "<td>" + esc(r.status()) + "</td>"
+                                                         + "<td>" + esc(r.severity()) + "</td>"
+                                                         + "<td>" + esc(r.findings()) + "</td>"
+                                                         + "</tr>";
+                                              })
+                                              .collect(Collectors.joining("\n"));
 
-        String moduleRows = result.getModuleLevels() == null ? "" : result.getModuleLevels().entrySet().stream()
-                .map(e -> "<tr><td>" + esc(e.getKey()) + "</td><td>" + esc(e.getValue()) + "</td></tr>")
-                .collect(Collectors.joining("\n"));
+        String moduleRows = result.getModuleLevels() == null
+                ? ""
+                : result.getModuleLevels().entrySet().stream()
+                  .map(e -> "<tr><td>" + esc(e.getKey()) + "</td><td>" + esc(e.getValue()) + "</td></tr>")
+                  .collect(Collectors.joining("\n"));
 
         return """
                 <!DOCTYPE html>
@@ -212,13 +215,13 @@ class ReportServiceImpl implements ReportService {
         if (controls != null) {
             for (ControlEvaluationResult r : controls) {
                 sb.append(csvField(r.controlId())).append(',')
-                  .append(csvField(r.controlName())).append(',')
-                  .append(csvField(r.status())).append(',')
-                  .append(csvField(r.severity())).append(',')
-                  .append(csvField(r.resourceId())).append(',')
-                  .append(csvField(r.resourceType())).append(',')
-                  .append(csvField(r.findings())).append(',')
-                  .append(csvField(r.evaluatedAt())).append('\n');
+                        .append(csvField(r.controlName())).append(',')
+                        .append(csvField(r.status())).append(',')
+                        .append(csvField(r.severity())).append(',')
+                        .append(csvField(r.resourceId())).append(',')
+                        .append(csvField(r.resourceType())).append(',')
+                        .append(csvField(r.findings())).append(',')
+                        .append(csvField(r.evaluatedAt())).append('\n');
             }
         }
 

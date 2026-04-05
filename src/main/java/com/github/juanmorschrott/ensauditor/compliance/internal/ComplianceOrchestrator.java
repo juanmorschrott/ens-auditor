@@ -66,20 +66,30 @@ class ComplianceOrchestrator implements ComplianceService {
                     log.debug("Evaluating control {} with {}", control.controlId(), evaluator.getName());
                     ControlEvaluationResult raw = evaluator.evaluate(control);
                     return new ControlEvaluationResult(
-                        control.controlId(),
-                        control.name(),
-                        control.module(),
-                        raw.status(),
-                        control.severity(),
-                        raw.resourceId(),
-                        type,
-                        raw.findings(),
-                        raw.evaluatedAt()
+                            control.controlId(),
+                            control.name(),
+                            control.module(),
+                            raw.status(),
+                            control.severity(),
+                            raw.resourceId(),
+                            type,
+                            raw.findings(),
+                            raw.evaluatedAt()
                     );
                 }
             }
 
-            return new ControlEvaluationResult(control.controlId(), control.name(), control.module(), ControlStatus.NOT_EVALUATED, control.severity(), null, null, null, null);
+            return new ControlEvaluationResult(
+                    control.controlId(),
+                    control.name(),
+                    control.module(),
+                    ControlStatus.NOT_EVALUATED,
+                    control.severity(),
+                    null,
+                    null,
+                    null,
+                    null
+            );
 
         } catch (Exception e) {
             log.warn("Error evaluating control {}: {}", control.controlId(), e.getMessage());

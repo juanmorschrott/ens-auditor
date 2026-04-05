@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AuditResult {
+
     private final String auditId;
     private final LocalDateTime startTime;
     private LocalDateTime endTime;
