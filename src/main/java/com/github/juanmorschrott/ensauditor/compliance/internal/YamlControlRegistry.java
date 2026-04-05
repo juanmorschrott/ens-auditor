@@ -74,19 +74,10 @@ class YamlControlRegistry implements ControlRegistry {
     static class NativeHints implements RuntimeHintsRegistrar {
         @Override
         public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-            hints.resources().registerPattern("ens-controls.yaml");
-            hints.resources().registerPattern("logback.xml");
-            hints.resources().registerPattern("ch/qos/logback/classic/logback-classic-version.properties");
-            hints.resources().registerPattern("ch/qos/logback/core/logback-core-version.properties");
+            // YAML deserialization targets (package-private, must be registered here)
             hints.reflection().registerType(EnsControlsConfig.class, MemberCategory.values());
             hints.reflection().registerType(EnsControlsConfig.ModuleConfig.class, MemberCategory.values());
             hints.reflection().registerType(EnsControlsConfig.ControlConfig.class, MemberCategory.values());
-            hints.reflection().registerType(com.github.juanmorschrott.ensauditor.compliance.AuditResult.class, MemberCategory.values());
-            hints.reflection().registerType(com.github.juanmorschrott.ensauditor.compliance.ControlEvaluationResult.class, MemberCategory.values());
-            hints.reflection().registerType(com.github.juanmorschrott.ensauditor.compliance.ControlStatus.class, MemberCategory.values());
-            hints.reflection().registerType(com.github.juanmorschrott.ensauditor.compliance.SeverityLevel.class, MemberCategory.values());
-            hints.reflection().registerType(com.github.juanmorschrott.ensauditor.compliance.ComplianceLevel.class, MemberCategory.values());
-            hints.reflection().registerType(com.github.juanmorschrott.ensauditor.aws.ResourceType.class, MemberCategory.values());
         }
     }
 }
