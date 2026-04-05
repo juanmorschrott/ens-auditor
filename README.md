@@ -141,6 +141,75 @@ A control is a compliance rule to verify. A resource is the AWS entity being ins
 
 Only controls that can be automated through the AWS API are included. Non-automatable ENS requirements (governance, risk assessments, incident workflows, etc.) must be managed as manual evidence.
 
+## Arquitecture
+
+```
+graph TD
+    %% CLI Layer
+    subgraph CLI[Interface Layer / CLI]
+        Main[Main class] -->|Starts| AuditCmd[AuditCommand]
+        AuditCmd -->|Flow Control| Orchestrator[ComplianceOrchestrator]
+    end
+
+    %% Compliance Logic Layer
+    subgraph Core[Compliance Logic]
+        Orchestrator -->|Reads rules| Registry[YamlControlRegistry]
+        Registry -.->|Config file| YAML[(ens-controls.yaml)]
+        
+        Orchestrator -->|Coordinates with| Evaluators[Resource Analyzers]
+        
+        subgraph EvalTypes[Analyzer Types]
+            S3Eval[S3Evaluator]
+            RDSEval[RDSEvaluator]
+            IAMEval[IAMEvaluator]
+            DBEval[DynamoDBEvaluator]
+        end
+        
+        Evaluators --- S3Eval
+        Evaluators --- RDSEval
+        Evaluators --- IAMEval
+        Evaluators --- DBEval
+    end
+
+    %% AWS Integration Layer
+    subgraph Infrastructure[AWS Integration]
+        S3Eval -->|Requests current state| AWS_Service[AwsResourceService]
+        RDSEval -->|Requests current state| AWS_Service
+        IAMEval -->|Requests current state| AWS_Service
+        
+        subgraph Fetchers[Resource Fetchers]
+            S3Fetch[S3ResourceFetcher]
+            RDSFetch[RDSResourceFetcher]
+            IAMFetch[IAMResourceFetcher]
+        end
+        
+        AWS_Service --- S3Fetch
+        AWS_Service --- RDSFetch
+        AWS_Service --- IAMFetch
+        
+        Fetchers -.->|API Calls| AWS_Cloud((AWS Cloud))
+    end
+
+    %% Output Layer
+    subgraph Output[Report Generation]
+        Orchestrator -->|Groups results| AuditResult[AuditResult]
+        AuditCmd -->|Requests presentation| ReportService[ReportService]
+        AuditResult -->|Raw data| ReportService
+        ReportService -->|Generates| JSON[JSON Report]
+        ReportService -->|Generates| HTML[HTML Surface]
+    end
+
+    %% Styles
+    classDef primary fill:#1168bd,stroke:#0b4884,stroke-width:2px,color:#ffffff;
+    classDef secondary fill:#85bbf0,stroke:#5d82a8,stroke-width:1px,color:#000000;
+    classDef config fill:#ebebeb,stroke:#999999,stroke-dasharray: 5 5,color:#333333;
+    
+    class Orchestrator primary;
+    class Registry config;
+    class YAML config;
+
+```
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for setup instructions and pull request guidelines.
