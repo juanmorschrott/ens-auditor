@@ -32,9 +32,9 @@ class ComplianceOrchestrator implements ComplianceService {
     }
 
     @Override
-    public List<ControlEvaluationResult> evaluateControls(List<ControlDefinition> controls) {
+    public AuditResult evaluateControls(List<ControlDefinition> controls) {
         int total = controls.size();
-        List<ControlEvaluationResult> results = new java.util.ArrayList<>();
+        AuditResult auditResult = new AuditResult();
 
         for (int i = 0; i < total; i++) {
             ControlDefinition control = controls.get(i);
@@ -48,11 +48,13 @@ class ComplianceOrchestrator implements ComplianceService {
                     total,
                     control.controlId());
 
-            results.add(this.evaluateControl(control));
+            auditResult.addControlResult(this.evaluateControl(control));
         }
         System.err.print("\r" + " ".repeat(100) + "\r"); // Clear progress line
         System.err.println("Audit completed.\n");
-        return results;
+
+        auditResult.calculateComplianceLevels();
+        return auditResult;
     }
 
     private ControlEvaluationResult evaluateControl(ControlDefinition control) {

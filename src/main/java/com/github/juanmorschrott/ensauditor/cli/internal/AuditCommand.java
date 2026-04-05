@@ -9,7 +9,6 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -55,11 +54,7 @@ public class AuditCommand implements Callable<Integer> {
 
         log.info("Running audit of {} controls", controls.size());
 
-        List<ControlEvaluationResult> results = complianceService.evaluateControls(controls);
-
-        AuditResult auditResult = new AuditResult();
-        results.forEach(auditResult::addControlResult);
-        auditResult.calculateComplianceLevels();
+        AuditResult auditResult = complianceService.evaluateControls(controls);
 
         String report = formatReport(auditResult);
 

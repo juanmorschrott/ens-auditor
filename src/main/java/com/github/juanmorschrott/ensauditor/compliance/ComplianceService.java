@@ -8,9 +8,9 @@ import java.util.List;
  */
 public interface ComplianceService {
     /**
-     * Evaluates multiple controls in batch.
+     * Evaluates multiple controls and calculates compliance levels.
      * @param controls list of control definitions to evaluate
-     * @return list of evaluation results
+     * @return complete audit result with evaluation results and compliance levels
      */
-    List<ControlEvaluationResult> evaluateControls(List<ControlDefinition> controls);
+    AuditResult evaluateControls(List<ControlDefinition> controls);
 }
