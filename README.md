@@ -143,7 +143,7 @@ Only controls that can be automated through the AWS API are included. Non-automa
 
 ## Arquitecture
 
-```
+```mermaid
 graph TD
     %% CLI Layer
     subgraph CLI[Interface Layer / CLI]
