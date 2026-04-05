@@ -141,7 +141,7 @@ A control is a compliance rule to verify. A resource is the AWS entity being ins
 
 Only controls that can be automated through the AWS API are included. Non-automatable ENS requirements (governance, risk assessments, incident workflows, etc.) must be managed as manual evidence.
 
-## Arquitecture
+## Architecture
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#ffffff', 'clusterBkg': 'none', 'clusterBorder': '#666666' }}}%%
