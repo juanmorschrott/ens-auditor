@@ -141,6 +141,23 @@ A control is a compliance rule to verify. A resource is the AWS entity being ins
 
 Only controls that can be automated through the AWS API are included. Non-automatable ENS requirements (governance, risk assessments, incident workflows, etc.) must be managed as manual evidence.
 
+### Covered services
+
+| Service        | Controls                                                                                   |
+|----------------|--------------------------------------------------------------------------------------------|
+| S3             | encryption, logging, public access block, versioning                                       |
+| RDS            | encryption, KMS key, logging, IAM auth, backups, multi-AZ                                  |
+| IAM            | MFA, least privilege, unused credentials                                                   |
+| DynamoDB       | encryption with customer-managed key                                                       |
+| KMS            | automatic rotation, keys pending deletion (customer-managed keys only)                     |
+| CloudTrail     | multi-region trail logging, log file validation, KMS encryption (no trails = non-compliant) |
+| EBS            | volume encryption                                                                          |
+| EC2 / VPC      | SSH/RDP not open to `0.0.0.0/0` or `::/0`, VPC flow logs                                   |
+
+Additional read-only IAM permissions required: `kms:ListKeys`, `kms:DescribeKey`, `kms:GetKeyRotationStatus`, `cloudtrail:DescribeTrails`, `cloudtrail:GetTrailStatus`, `ec2:DescribeVolumes`, `ec2:DescribeSecurityGroups`, `ec2:DescribeVpcs`, `ec2:DescribeFlowLogs`.
+
+Audits are scoped to the configured AWS region (`AWS_REGION` / `aws.region`).
+
 ## Architecture
 
 ```mermaid

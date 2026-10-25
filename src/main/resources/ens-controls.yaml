@@ -82,6 +82,82 @@ modules:
         evaluators:
           - kms
 
+      - id: "ens.kms.pending-deletion"
+        name: "KMS keys pending deletion"
+        description: "Verify that no customer-managed KMS keys are scheduled for deletion"
+        severity: MEDIUM
+        automatable: true
+        affected_resources:
+          - kms:key
+        evaluators:
+          - kms
+
+      - id: "ens.ebs.encryption"
+        name: "EBS encryption at rest"
+        description: "Verify that EBS volumes are encrypted"
+        severity: CRITICAL
+        automatable: true
+        affected_resources:
+          - ec2:volume
+        evaluators:
+          - ebs
+
+  - name: "op.mon"
+    display_name: "Monitorización y registro de actividad (Monitoring and Audit)"
+    controls:
+      - id: "ens.cloudtrail.enabled"
+        name: "CloudTrail enabled in all regions"
+        description: "Verify that at least one multi-region CloudTrail trail is actively logging"
+        severity: CRITICAL
+        automatable: true
+        affected_resources:
+          - cloudtrail:trail
+        evaluators:
+          - cloudtrail
+
+      - id: "ens.cloudtrail.log-validation"
+        name: "CloudTrail log file validation"
+        description: "Verify that CloudTrail trails have log file integrity validation enabled"
+        severity: HIGH
+        automatable: true
+        affected_resources:
+          - cloudtrail:trail
+        evaluators:
+          - cloudtrail
+
+      - id: "ens.cloudtrail.encryption"
+        name: "CloudTrail log encryption"
+        description: "Verify that CloudTrail logs are encrypted with a KMS key"
+        severity: HIGH
+        automatable: true
+        affected_resources:
+          - cloudtrail:trail
+        evaluators:
+          - cloudtrail
+
+  - name: "mp.com"
+    display_name: "Protección de las comunicaciones (Network Security)"
+    controls:
+      - id: "ens.ec2.sg-admin-ports"
+        name: "Administrative ports not exposed"
+        description: "Verify that no security group allows SSH (22) or RDP (3389) from 0.0.0.0/0 or ::/0"
+        severity: CRITICAL
+        automatable: true
+        affected_resources:
+          - ec2:security-group
+        evaluators:
+          - ec2
+
+      - id: "ens.vpc.flow-logs"
+        name: "VPC flow logs"
+        description: "Verify that VPCs have active flow logs"
+        severity: HIGH
+        automatable: true
+        affected_resources:
+          - ec2:vpc
+        evaluators:
+          - ec2
+
 
   - name: "op.acc"
     display_name: "Control de acceso (Access and Identity Security)"

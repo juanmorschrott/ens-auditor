@@ -42,7 +42,22 @@ public enum ResourceType {
     /**
      * AWS DynamoDB table.
      */
-    DYNAMODB_TABLE("dynamodb:table");
+    DYNAMODB_TABLE("dynamodb:table"),
+
+    /**
+     * AWS CloudTrail trail.
+     */
+    CLOUDTRAIL_TRAIL("cloudtrail:trail"),
+
+    /**
+     * AWS EBS volume.
+     */
+    EBS_VOLUME("ec2:volume"),
+
+    /**
+     * AWS EC2 security group.
+     */
+    SECURITY_GROUP("ec2:security-group");
 
     private final String identifier;
 

@@ -37,4 +37,34 @@ public interface AwsResourceService {
      * @return list of DynamoDB tables configurations
      */
     List<DynamoDBDto> fetchDynamoDBs();
+
+    /**
+     * Fetches customer-managed KMS keys.
+     * @return list of KMS key configurations
+     */
+    List<KmsKeyDto> fetchKmsKeys();
+
+    /**
+     * Fetches CloudTrail trails.
+     * @return list of trail configurations
+     */
+    List<CloudTrailDto> fetchCloudTrails();
+
+    /**
+     * Fetches EBS volumes.
+     * @return list of EBS volume configurations
+     */
+    List<EbsVolumeDto> fetchEbsVolumes();
+
+    /**
+     * Fetches EC2 security groups.
+     * @return list of security group configurations
+     */
+    List<SecurityGroupDto> fetchSecurityGroups();
+
+    /**
+     * Fetches VPCs.
+     * @return list of VPC configurations
+     */
+    List<VpcDto> fetchVpcs();
 }

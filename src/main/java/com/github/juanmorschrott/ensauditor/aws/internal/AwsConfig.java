@@ -13,6 +13,9 @@ import software.amazon.awssdk.services.iam.IamClient;
 import software.amazon.awssdk.services.rds.RdsClient;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.cloudtrail.CloudTrailClient;
+import software.amazon.awssdk.services.ec2.Ec2Client;
+import software.amazon.awssdk.services.kms.KmsClient;
 
 /**
  * AWS SDK v2 configuration exposing service clients as Spring Beans.
@@ -57,5 +60,20 @@ public class AwsConfig {
     @Bean
     DynamoDbClient dynamoDbClient() {
         return DynamoDbClient.builder().region(resolveRegion()).build();
+    }
+
+    @Bean
+    KmsClient kmsClient() {
+        return KmsClient.builder().region(resolveRegion()).build();
+    }
+
+    @Bean
+    CloudTrailClient cloudTrailClient() {
+        return CloudTrailClient.builder().region(resolveRegion()).build();
+    }
+
+    @Bean
+    Ec2Client ec2Client() {
+        return Ec2Client.builder().region(resolveRegion()).build();
     }
 }
