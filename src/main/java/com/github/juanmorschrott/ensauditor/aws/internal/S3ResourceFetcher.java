@@ -54,13 +54,28 @@ class S3ResourceFetcher {
      * @return bucket DTO
      */
     public S3BucketDto fetchBucket(String bucketName) {
+        EncryptionConfig encryption = fetchEncryptionConfig(bucketName);
+        boolean versioningEnabled = fetchVersioningEnabled(bucketName);
+        boolean publicAccessBlockEnabled = fetchPublicAccessBlockEnabled(bucketName);
+        LoggingConfig logging = fetchLoggingConfig(bucketName);
+
+        return new S3BucketDto(
+                bucketName,
+                null,
+                Instant.now(),
+                versioningEnabled,
+                encryption.enabled(),
+                encryption.algorithm(),
+                logging.enabled(),
+                logging.targetBucket(),
+                publicAccessBlockEnabled,
+                Map.of()
+        );
+    }
+
+    private EncryptionConfig fetchEncryptionConfig(String bucketName) {
         boolean encryptionEnabled = false;
         String encryptionAlgorithm = null;
-        boolean versioningEnabled = false;
-        boolean publicAccessBlockEnabled = false;
-        boolean loggingEnabled = false;
-        String loggingTargetBucket = null;
-
         try {
             GetBucketEncryptionResponse encryptionResp = s3Client.getBucketEncryption(b -> b.bucket(bucketName));
             if (encryptionResp.serverSideEncryptionConfiguration() != null && !encryptionResp.serverSideEncryptionConfiguration().rules().isEmpty()) {
@@ -71,14 +86,22 @@ class S3ResourceFetcher {
         } catch (S3Exception e) {
             log.debug("No encryption config for bucket {}: {}", bucketName, e.awsErrorDetails().errorCode());
         }
+        return new EncryptionConfig(encryptionEnabled, encryptionAlgorithm);
+    }
 
+    private boolean fetchVersioningEnabled(String bucketName) {
+        boolean versioningEnabled = false;
         try {
             GetBucketVersioningResponse versioningResp = s3Client.getBucketVersioning(b -> b.bucket(bucketName));
             versioningEnabled = BucketVersioningStatus.ENABLED == versioningResp.status();
         } catch (S3Exception e) {
             log.debug("Could not fetch versioning for bucket {}: {}", bucketName, e.getMessage());
         }
+        return versioningEnabled;
+    }
 
+    private boolean fetchPublicAccessBlockEnabled(String bucketName) {
+        boolean publicAccessBlockEnabled = false;
         try {
             GetPublicAccessBlockResponse pabResp = s3Client.getPublicAccessBlock(b -> b.bucket(bucketName));
             PublicAccessBlockConfiguration pabConfig = pabResp.publicAccessBlockConfiguration();
@@ -89,7 +112,12 @@ class S3ResourceFetcher {
         } catch (S3Exception e) {
             log.debug("Could not fetch public access block for bucket {}: {}", bucketName, e.getMessage());
         }
+        return publicAccessBlockEnabled;
+    }
 
+    private LoggingConfig fetchLoggingConfig(String bucketName) {
+        boolean loggingEnabled = false;
+        String loggingTargetBucket = null;
         try {
             GetBucketLoggingResponse loggingResp = s3Client.getBucketLogging(b -> b.bucket(bucketName));
             if (loggingResp.loggingEnabled() != null) {
@@ -99,19 +127,11 @@ class S3ResourceFetcher {
         } catch (S3Exception e) {
             log.debug("Could not fetch logging config for bucket {}: {}", bucketName, e.getMessage());
         }
-
-        return new S3BucketDto(
-                bucketName,
-                null,
-                Instant.now(),
-                versioningEnabled,
-                encryptionEnabled,
-                encryptionAlgorithm,
-                loggingEnabled,
-                loggingTargetBucket,
-                publicAccessBlockEnabled,
-                Map.of()
-        );
+        return new LoggingConfig(loggingEnabled, loggingTargetBucket);
     }
+
+    private record EncryptionConfig(boolean enabled, String algorithm) {}
+
+    private record LoggingConfig(boolean enabled, String targetBucket) {}
 
 }

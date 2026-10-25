@@ -27,7 +27,6 @@ class ReportServiceImpl implements ReportService {
 
     @Override
     public String presentAsTable(AuditResult result) {
-
         List<ControlEvaluationResult> controls = result.getControlResults();
 
         // Column widths
@@ -42,14 +41,23 @@ class ReportServiceImpl implements ReportService {
                 + "+" + "-".repeat(findingsW + 2) + "+";
 
         StringBuilder sb = new StringBuilder();
+        appendTableHeader(sb);
+        appendAuditMetadata(sb, result);
+        appendControlRows(sb, controls, idW, statusW, severityW, findingsW);
+        appendModuleSummary(sb, result);
+        appendControlCounts(sb, controls);
+        return sb.toString();
+    }
 
-        // Header
+    private static void appendTableHeader(StringBuilder sb) {
         sb.append("""
                 ╔════════════════════════════════════════════╗
                 ║     ENS Auditor - Compliance Report        ║
                 ╚════════════════════════════════════════════╝
                 """);
+    }
 
+    private static void appendAuditMetadata(StringBuilder sb, AuditResult result) {
         if (result.getStartTime() != null) {
             sb.append("  Date       : ").append(result.getStartTime().format(TIMESTAMP_FMT)).append('\n');
         }
@@ -63,8 +71,14 @@ class ReportServiceImpl implements ReportService {
             sb.append("  Overall    : ").append(result.getOverallCompliance()).append('\n');
         }
         sb.append('\n');
+    }
 
-        // Table
+    private static void appendControlRows(StringBuilder sb, List<ControlEvaluationResult> controls,
+                                          int idW, int statusW, int severityW, int findingsW) {
+        String line = "+" + "-".repeat(idW + 2)
+                + "+" + "-".repeat(statusW + 2)
+                + "+" + "-".repeat(severityW + 2)
+                + "+" + "-".repeat(findingsW + 2) + "+";
         sb.append(line).append('\n');
         sb.append(row("Control ID", "Status", "Severity", "Findings", idW, statusW, severityW, findingsW)).append('\n');
         sb.append(line).append('\n');
@@ -83,15 +97,17 @@ class ReportServiceImpl implements ReportService {
             }
         }
         sb.append(line).append('\n');
+    }
 
-        // Module summary
+    private static void appendModuleSummary(StringBuilder sb, AuditResult result) {
         if (result.getModuleLevels() != null && !result.getModuleLevels().isEmpty()) {
             sb.append("\n  Module compliance:\n");
             result.getModuleLevels().forEach((module, level) ->
                     sb.append("    ").append(module).append(": ").append(level).append('\n'));
         }
+    }
 
-        // Counts
+    private static void appendControlCounts(StringBuilder sb, List<ControlEvaluationResult> controls) {
         if (controls != null) {
             long compliant = controls.stream().filter(r -> r.status() == ControlStatus.COMPLIANT).count();
             long nonCompliant = controls.stream().filter(r -> r.status() == ControlStatus.NON_COMPLIANT).count();
@@ -101,8 +117,6 @@ class ReportServiceImpl implements ReportService {
                     .append("  |  NOT EVALUATED: ").append(notEvaluated)
                     .append('\n');
         }
-
-        return sb.toString();
     }
 
     private static String row(Object id, Object status, Object severity, Object findings,

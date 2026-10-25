@@ -98,66 +98,8 @@ class IamResourceFetcher {
     public IamPrincipalDto fetchUser(String userName) {
         User user = iamClient.getUser(b -> b.userName(userName)).user();
 
-        // Check MFA devices
-        boolean mfaRequired = false;
-        try {
-            mfaRequired = !iamClient.listMFADevices(b -> b.userName(userName)).mfaDevices().isEmpty();
-        } catch (SdkException e) {
-            log.debug("IAM API call failed: {}", e.getMessage());
-        }
-
-        // Check active access keys and last usage
-        boolean hasActiveAccessKeys = false;
-        Integer lastUsedDaysAgo = null;
-        try {
-            List<AccessKeyMetadata> accessKeys = iamClient.listAccessKeys(b -> b.userName(userName)).accessKeyMetadata();
-            for (AccessKeyMetadata key : accessKeys) {
-                if (StatusType.ACTIVE == key.status()) {
-                    hasActiveAccessKeys = true;
-                    try {
-                        Instant lastUsed = iamClient.getAccessKeyLastUsed(b -> b.accessKeyId(key.accessKeyId()))
-                                .accessKeyLastUsed().lastUsedDate();
-                        if (lastUsed != null) {
-                            int days = (int) ChronoUnit.DAYS.between(lastUsed, Instant.now());
-                            lastUsedDaysAgo = lastUsedDaysAgo == null ? days : Math.min(lastUsedDaysAgo, days);
-                        }
-                    } catch (SdkException e) {
-                        log.debug("IAM API call failed: {}", e.getMessage());
-                    }
-                }
-            }
-        } catch (SdkException e) {
-            log.debug("IAM API call failed: {}", e.getMessage());
-        }
-
-        // Attached managed policies
-        List<String> attachedPolicies = new ArrayList<>();
-        try {
-            iamClient.listAttachedUserPoliciesPaginator(b -> b.userName(userName))
-                    .attachedPolicies()
-                    .forEach(p -> attachedPolicies.add(p.policyArn()));
-        } catch (SdkException e) {
-            log.debug("IAM API call failed: {}", e.getMessage());
-        }
-
-        // Inline policy names
-        List<String> inlinePolicies = new ArrayList<>();
-        try {
-            iamClient.listUserPoliciesPaginator(b -> b.userName(userName))
-                    .policyNames()
-                    .forEach(inlinePolicies::add);
-        } catch (SdkException e) {
-            log.debug("IAM API call failed: {}", e.getMessage());
-        }
-
-        // Tags
-        Map<String, String> tags = Map.of();
-        try {
-            tags = iamClient.listUserTags(b -> b.userName(userName)).tags().stream()
-                    .collect(Collectors.toMap(Tag::key, Tag::value, (existing, replace) -> replace));
-        } catch (SdkException e) {
-            log.debug("IAM API call failed: {}", e.getMessage());
-        }
+        boolean mfaRequired = hasMfaDevice(userName);
+        AccessKeyUsage accessKeyUsage = fetchAccessKeyUsage(userName);
 
         return new IamPrincipalDto(
                 user.userName(),
@@ -168,12 +110,87 @@ class IamResourceFetcher {
                 mfaRequired,
                 null,
                 user.path(),
-                attachedPolicies,
-                inlinePolicies,
-                hasActiveAccessKeys,
-                lastUsedDaysAgo,
-                tags
+                fetchAttachedUserPolicies(userName),
+                fetchInlineUserPolicies(userName),
+                accessKeyUsage.hasActiveAccessKeys(),
+                accessKeyUsage.lastUsedDaysAgo(),
+                fetchUserTags(userName)
         );
+    }
+
+    private boolean hasMfaDevice(String userName) {
+        try {
+            return !iamClient.listMFADevices(b -> b.userName(userName)).mfaDevices().isEmpty();
+        } catch (SdkException e) {
+            log.debug("IAM API call failed: {}", e.getMessage());
+            return false;
+        }
+    }
+
+    private AccessKeyUsage fetchAccessKeyUsage(String userName) {
+        boolean hasActiveAccessKeys = false;
+        Integer lastUsedDaysAgo = null;
+        try {
+            List<AccessKeyMetadata> accessKeys = iamClient.listAccessKeys(b -> b.userName(userName)).accessKeyMetadata();
+            for (AccessKeyMetadata key : accessKeys) {
+                if (StatusType.ACTIVE == key.status()) {
+                    hasActiveAccessKeys = true;
+                    try {
+                        Instant lastUsed = iamClient.getAccessKeyLastUsed(b -> b.accessKeyId(key.accessKeyId()))
+                                .accessKeyLastUsed().lastUsedDate();
+                        lastUsedDaysAgo = latestUsageDays(lastUsedDaysAgo, lastUsed);
+                    } catch (SdkException e) {
+                        log.debug("IAM API call failed: {}", e.getMessage());
+                    }
+                }
+            }
+        } catch (SdkException e) {
+            log.debug("IAM API call failed: {}", e.getMessage());
+        }
+        return new AccessKeyUsage(hasActiveAccessKeys, lastUsedDaysAgo);
+    }
+
+    private static Integer latestUsageDays(Integer current, Instant lastUsed) {
+        if (lastUsed == null) {
+            return current;
+        }
+        int days = (int) ChronoUnit.DAYS.between(lastUsed, Instant.now());
+        return current == null ? days : Math.min(current, days);
+    }
+
+    private List<String> fetchAttachedUserPolicies(String userName) {
+        List<String> attachedPolicies = new ArrayList<>();
+        try {
+            iamClient.listAttachedUserPoliciesPaginator(b -> b.userName(userName))
+                    .attachedPolicies()
+                    .forEach(p -> attachedPolicies.add(p.policyArn()));
+        } catch (SdkException e) {
+            log.debug("IAM API call failed: {}", e.getMessage());
+        }
+        return attachedPolicies;
+    }
+
+    private List<String> fetchInlineUserPolicies(String userName) {
+        List<String> inlinePolicies = new ArrayList<>();
+        try {
+            iamClient.listUserPoliciesPaginator(b -> b.userName(userName))
+                    .policyNames()
+                    .forEach(inlinePolicies::add);
+        } catch (SdkException e) {
+            log.debug("IAM API call failed: {}", e.getMessage());
+        }
+        return inlinePolicies;
+    }
+
+    private Map<String, String> fetchUserTags(String userName) {
+        Map<String, String> tags = Map.of();
+        try {
+            tags = iamClient.listUserTags(b -> b.userName(userName)).tags().stream()
+                    .collect(Collectors.toMap(Tag::key, Tag::value, (existing, replace) -> replace));
+        } catch (SdkException e) {
+            log.debug("IAM API call failed: {}", e.getMessage());
+        }
+        return tags;
     }
 
     /**
@@ -230,5 +247,7 @@ class IamResourceFetcher {
                 tags
         );
     }
+
+    private record AccessKeyUsage(boolean hasActiveAccessKeys, Integer lastUsedDaysAgo) {}
 
 }
